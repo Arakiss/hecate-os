@@ -31,11 +31,11 @@ HecateOS is optimized for, but not limited to:
 
 | Component | Recommended | Minimum |
 |-----------|-------------|---------|
-| CPU | Intel i9-13900K or AMD Ryzen 9 7950X | Intel i7-12700K or AMD Ryzen 7 5800X |
+| CPU | Intel i9-13900K+ | Intel i7-12700K+ |
 | RAM | 128GB DDR5-6400 | 32GB DDR5-4800 |
 | GPU | NVIDIA RTX 4090 | NVIDIA RTX 3070 or better |
 | Storage | NVMe PCIe 5.0 | NVMe PCIe 4.0 |
-| Motherboard | Z790/X670E chipset | Z690/X570 chipset |
+| Motherboard | Z790/Z690 chipset | Intel 600+ series |
 
 ## 🔮 Philosophy
 
@@ -117,18 +117,17 @@ Edit configuration files in `config/` before building:
 - `includes.chroot/`: Add custom files
 - `hooks/`: Modify build hooks
 
-## 📊 Benchmarks
+## 📊 Expected Performance Gains
 
-Performance compared to stock Ubuntu 24.04:
+*Note: These are theoretical improvements based on optimizations. Real benchmarks coming after first ISO build.*
 
-| Benchmark | Stock Ubuntu | HecateOS | Improvement |
-|-----------|-------------|----------|-------------|
-| Geekbench 6 Single | 2,850 | 3,105 | +8.9% |
-| Geekbench 6 Multi | 18,500 | 21,200 | +14.6% |
-| CrystalDiskMark Seq Read | 7,100 MB/s | 7,450 MB/s | +4.9% |
-| CUDA Samples (avg) | 100% | 112% | +12% |
-| Docker build time | 100% | 87% | -13% |
-| System boot time | 18.5s | 11.2s | -39.5% |
+| Optimization | Expected Impact | Reason |
+|--------------|----------------|--------|
+| Mitigations disabled | +5-15% | Spectre/Meltdown overhead removed |
+| Performance governor | +3-8% | No frequency scaling delays |
+| ZRAM vs disk swap | +10-20% | Memory compression faster than disk |
+| Custom kernel params | +2-5% | Reduced latency, better scheduling |
+| **Estimated Total** | **+15-30%** | *Actual results will vary by workload* |
 
 ## 🤝 Contributing
 
