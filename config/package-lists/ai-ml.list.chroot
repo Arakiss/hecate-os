@@ -1,45 +1,14 @@
 # HecateOS AI/ML Stack Packages
 # Machine Learning and AI frameworks
+#
+# IMPORTANT: For production ML/AI work, install frameworks via pip/conda:
+#   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+#   pip install tensorflow[and-cuda]
+#
+# Ubuntu apt packages are often outdated and lack GPU acceleration.
+# The packages below are minimal dependencies and utilities only.
 
-# PyTorch dependencies
-python3-torch
-python3-torchvision
-python3-torchaudio
-
-# TensorFlow dependencies
-python3-tensorflow
-python3-tensorflow-gpu
-tensorboard
-
-# ML Libraries
-python3-xgboost
-python3-lightgbm
-python3-catboost
-
-# Deep Learning tools
-python3-keras
-python3-theano
-python3-mxnet
-
-# Computer Vision
-python3-cv2
-python3-pillow
-python3-imageio
-python3-scikit-image
-
-# NLP
-python3-nltk
-python3-spacy
-python3-gensim
-
-# Data processing
-python3-dask
-python3-pyarrow
-python3-fastparquet
-python3-h5py
-python3-tables
-
-# Jupyter ecosystem
+# Jupyter ecosystem (safe to install via apt)
 jupyterlab
 jupyter-core
 nbconvert
@@ -47,19 +16,23 @@ nbformat
 ipywidgets
 ipykernel
 
-# Visualization
-python3-plotly
-python3-bokeh
-python3-seaborn
-python3-dash
-
-# GPU utilities for ML
-gpustat
-py3nvml
-pynvml
-
-# Additional scientific computing
+# Scientific computing base (apt versions are fine for these)
 python3-sympy
 python3-statsmodels
 python3-networkx
-python3-igraph
+
+# Data processing (apt versions acceptable)
+python3-h5py
+python3-tables
+
+# Visualization (apt versions acceptable)
+python3-seaborn
+
+# NOTE: The following should be installed via pip for GPU support:
+# - PyTorch: pip install torch torchvision torchaudio
+# - TensorFlow: pip install tensorflow[and-cuda]
+# - XGBoost with GPU: pip install xgboost
+# - LightGBM with GPU: pip install lightgbm --config-settings=cmake.define.USE_CUDA=ON
+#
+# Many python3-* packages in Ubuntu repos are CPU-only or very outdated.
+# gpustat is already in nvidia.list.chroot
