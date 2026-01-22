@@ -1,32 +1,25 @@
 # HecateOS Performance Optimization Packages
 # Tools for system tuning and performance monitoring
 
-# Performance tuning
-zram-config
-zramswap-enabler
+# ZRAM (memory compression)
+zram-tools
+
+# CPU management
 cpufrequtils
-cpupower-gui
 irqbalance
 tuned
 tuned-utils
-tuned-gtk
 thermald
 powertop
-tlp
-tlp-rdw
 
 # I/O optimization
 hdparm
-sdparm
 nvme-cli
 fio
 ioping
 
 # CPU/Memory tools
 numactl
-numad
-memtester
-stress
 stress-ng
 sysbench
 
@@ -38,24 +31,18 @@ util-linux
 # Performance monitoring
 linux-tools-common
 linux-tools-generic
-turbostat
-i7z
 cpuid
 msr-tools
 
 # Process management
 schedtool
 cgroup-tools
-cgroupfs-mount
 
-# Advanced networking performance
+# Networking performance
 ethtool
-nicstat
 iftop
 bmon
 vnstat
 
-# Latency tools
+# Latency testing
 rt-tests
-latencytop
-cyclictest

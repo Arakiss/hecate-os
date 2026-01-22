@@ -1,116 +1,50 @@
-# HecateOS Development Stack Packages
-# Programming languages, tools, and frameworks
-#
-# NOTE: Ubuntu 24.04 repos have older versions of some tools.
-# For latest versions, see post-install documentation:
-# - Node.js 24 LTS: Use NodeSource PPA or nvm
-# - Go 1.25+: Use official go.dev installer
-# - Rust: Use rustup (installed but update with `rustup update`)
+# HecateOS Development Packages
+# Essential development tools only - users install their preferred stacks
 
-# Python (Ubuntu 24.04 has 3.12, latest is 3.14 - use pyenv for newer)
+# Python base
 python3
 python3-pip
-python3-dev
 python3-venv
-python3-setuptools
-python3-wheel
 python-is-python3
 pipx
-python3-numpy
-python3-scipy
-python3-pandas
-python3-matplotlib
-python3-sklearn
-python3-opencv
-ipython3
-jupyter-notebook
 
-# Node.js and JavaScript
-# NOTE: Ubuntu repos have Node 18.x, LTS is now 24.x "Krypton"
-# For Node 24 LTS: curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
-nodejs
-npm
-
-# Go (Ubuntu has 1.22, latest is 1.25 - use go.dev for newer)
-golang-go
-
-# Rust (use rustup for latest - currently 1.93.0)
-rustc
-cargo
-
-# C/C++
+# C/C++ essentials
 gcc
 g++
 gdb
-valgrind
 cmake
-cmake-curses-gui
 make
-autoconf
-automake
-libtool
 pkg-config
 clang
-clang-tools
-clang-format
-clang-tidy
-llvm
-lldb
 
-# Java
-default-jdk
-default-jre
-maven
-gradle
-
-# Containers
+# Docker
 docker.io
 docker-compose
-docker-buildx
-podman
-podman-compose
 containerd
-runc
-
-# Kubernetes tools
-# NOTE: k9s not in Ubuntu repos - install via: snap install k9s
-kubectl
-helm
 
 # Virtualization
 qemu-system-x86
 qemu-kvm
 libvirt-daemon-system
 libvirt-clients
-bridge-utils
 virt-manager
 
-# Databases
-# NOTE: MongoDB not in Ubuntu repos - see mongodb.com for official repo
-# NOTE: For production MongoDB, add official MongoDB repo
-postgresql
-postgresql-contrib
+# Database clients
 postgresql-client
-redis-server
 redis-tools
 sqlite3
-libsqlite3-dev
 
-# Development tools
-# NOTE: lazygit, delta, diff-so-fancy not in Ubuntu repos
-# Install via: cargo install git-delta, or snap/brew
+# Git tools
 gh
 tig
 
 # Code quality
 shellcheck
-yamllint
 
 # Build tools
 ninja-build
-meson
 
-# Documentation
-pandoc
-doxygen
-sphinx-common
+# NOTE: For latest Node.js, Go, Rust - install from official sources:
+# - Node.js: https://nodejs.org or nvm
+# - Go: https://go.dev/dl/
+# - Rust: https://rustup.rs

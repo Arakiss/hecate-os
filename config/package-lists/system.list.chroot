@@ -6,8 +6,8 @@ linux-generic-hwe-24.04
 linux-tools-generic-hwe-24.04
 linux-headers-generic-hwe-24.04
 intel-microcode
+amd64-microcode
 linux-firmware
-firmware-sof-signed
 
 # Core utilities
 ubuntu-minimal
@@ -33,19 +33,16 @@ smartmontools
 lm-sensors
 sysstat
 net-tools
-ethtool
 openssh-server
 openssh-client
 
 # Terminal and shell
 zsh
 tmux
-screen
 neovim
 vim
 nano
 bash-completion
-command-not-found
 
 # File management
 tree
@@ -54,39 +51,31 @@ duf
 fd-find
 ripgrep
 bat
-exa
+eza
 fzf
 jq
-yq
 
 # Compression
 zip
 unzip
 p7zip-full
-rar
-unrar
 xz-utils
+zstd
 
 # Networking
 network-manager
-network-manager-gnome
 wireless-tools
 wpasupplicant
-iw
 nmap
 traceroute
 mtr
 iperf3
-netcat
+netcat-openbsd
 tcpdump
-wireshark-common
 
 # System monitoring
 lsof
 strace
-ltrace
-perf-tools-unstable
 
 # Time sync
 chrony
-ntpdate

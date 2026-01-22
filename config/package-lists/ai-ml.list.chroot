@@ -1,38 +1,20 @@
-# HecateOS AI/ML Stack Packages
-# Machine Learning and AI frameworks
+# HecateOS AI/ML Dependencies
 #
-# IMPORTANT: For production ML/AI work, install frameworks via pip/conda:
+# PHILOSOPHY: We DON'T install ML frameworks via apt.
+# Users should install via pip/conda for GPU support:
 #   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-#   pip install tensorflow[and-cuda]
+#   pip install tensorflow
 #
-# Ubuntu apt packages are often outdated and lack GPU acceleration.
-# The packages below are minimal dependencies and utilities only.
+# This list only includes BUILD DEPENDENCIES that pip packages need.
 
-# Jupyter ecosystem (safe to install via apt)
-jupyterlab
-jupyter-core
-nbconvert
-nbformat
-ipywidgets
-ipykernel
+# Python build dependencies for compiling packages
+python3-dev
+python3-venv
+python3-pip
 
-# Scientific computing base (apt versions are fine for these)
-python3-sympy
-python3-statsmodels
-python3-networkx
-
-# Data processing (apt versions acceptable)
-python3-h5py
-python3-tables
-
-# Visualization (apt versions acceptable)
-python3-seaborn
-
-# NOTE: The following should be installed via pip for GPU support:
-# - PyTorch: pip install torch torchvision torchaudio
-# - TensorFlow: pip install tensorflow[and-cuda]
-# - XGBoost with GPU: pip install xgboost
-# - LightGBM with GPU: pip install lightgbm --config-settings=cmake.define.USE_CUDA=ON
-#
-# Many python3-* packages in Ubuntu repos are CPU-only or very outdated.
-# gpustat is already in nvidia.list.chroot
+# Numerical libraries (C libraries that pip packages link against)
+libopenblas-dev
+liblapack-dev
+libhdf5-dev
+libjpeg-dev
+libpng-dev

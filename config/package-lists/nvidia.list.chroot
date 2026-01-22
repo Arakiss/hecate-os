@@ -1,51 +1,27 @@
-# HecateOS NVIDIA GPU Support Packages
-# NVIDIA drivers and CUDA toolkit for AI/ML workloads
+# HecateOS NVIDIA GPU Support
+# Basic NVIDIA driver support from Ubuntu repos
 #
-# NOTE: For latest drivers (590+), add ppa:graphics-drivers/ppa
-# The 570 series is the current production branch as of Jan 2026
+# For full GPU setup with container toolkit, run: sudo hecate driver install
 
-# NVIDIA Driver (570 is production branch, supports RTX 40 series)
+# NVIDIA Driver (570 series - current Ubuntu LTS)
 nvidia-driver-570
-nvidia-dkms-570
 nvidia-utils-570
 nvidia-settings
-nvidia-modprobe
-nvidia-prime
+
+# CUDA toolkit (basic)
 nvidia-cuda-toolkit
-nvidia-cuda-dev
-
-# NVIDIA Container support
-nvidia-container-toolkit
-nvidia-container-runtime
-nvidia-docker2
-
-# Libraries
-libnvidia-compute-570
-libnvidia-decode-570
-libnvidia-encode-570
-libnvidia-gl-570
-libcudnn8
-libcudnn8-dev
-libnccl2
-libnccl-dev
 
 # OpenCL
 ocl-icd-libopencl1
-opencl-headers
 clinfo
 
 # Vulkan
 vulkan-tools
 libvulkan1
-libvulkan-dev
 
 # Video acceleration
-vdpauinfo
-libvdpau1
-mesa-vdpau-drivers
 vainfo
 
-# GPU monitoring tools
-# nvidia-smi is included in nvidia-utils-570, not a separate package
-gpustat
-nvitop
+# NOTE: Additional packages installed post-install by hecate driver:
+# - nvidia-container-toolkit (Docker GPU)
+# - libcudnn (Deep Learning)
