@@ -108,7 +108,7 @@ hecate-os/
 │   ├── includes.chroot/  # Files to include in ISO
 │   └── package-lists/    # Package definitions
 ├── scripts/         # HecateOS tools and utilities
-├── editions/        # Edition-specific builds
+├── branding/        # Logos and visual assets
 └── docs/           # Documentation
 ```
 

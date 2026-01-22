@@ -75,7 +75,7 @@ quick_check() {
 show_menu() {
     echo -e "${CYAN}What would you like to do?${RESET}"
     echo ""
-    echo "  1) Download HecateOS ISO (choose edition)"
+    echo "  1) Download HecateOS ISO"
     echo "  2) Optimize current Ubuntu installation"
     echo "  3) Install HecateOS tools only"
     echo "  4) Hardware detection test"
@@ -87,44 +87,23 @@ show_menu() {
 
 # Download ISO
 download_iso() {
-    echo -e "\n${CYAN}Select HecateOS Edition:${RESET}"
-    echo "  1) Ultimate (AI/ML, 64GB+ RAM, RTX 4080+)"
-    echo "  2) Workstation (Professional, 32GB+ RAM)"
-    echo "  3) Gaming (Gaming optimized, 16GB+ RAM)"
-    echo "  4) Developer (Coding focused, 16GB+ RAM)"
-    echo "  5) Lite (Standard hardware, 8GB+ RAM)"
-    echo "  6) Server (Headless, no GUI)"
-    echo ""
-    read -p "Select edition [1-6]: " -n 1 -r edition
-    echo ""
-    
-    case $edition in
-        1) EDITION="ultimate" ;;
-        2) EDITION="workstation" ;;
-        3) EDITION="gaming" ;;
-        4) EDITION="developer" ;;
-        5) EDITION="lite" ;;
-        6) EDITION="server" ;;
-        *) echo "Invalid selection"; exit 1 ;;
-    esac
-    
-    ISO_URL="https://github.com/Arakiss/hecate-os/releases/latest/download/hecate-os-$EDITION-latest.iso"
-    
-    echo -e "${CYAN}Downloading HecateOS $EDITION edition...${RESET}"
+    ISO_URL="https://github.com/Arakiss/hecate-os/releases/latest/download/hecate-os-latest.iso"
+
+    echo -e "\n${CYAN}Downloading HecateOS ISO...${RESET}"
     echo -e "${YELLOW}URL: $ISO_URL${RESET}"
-    
+
     if command -v wget > /dev/null; then
-        wget --show-progress -O "hecate-os-$EDITION.iso" "$ISO_URL"
+        wget --show-progress -O "hecate-os.iso" "$ISO_URL"
     elif command -v curl > /dev/null; then
-        curl -L --progress-bar -o "hecate-os-$EDITION.iso" "$ISO_URL"
+        curl -L --progress-bar -o "hecate-os.iso" "$ISO_URL"
     else
         echo -e "${RED}Neither wget nor curl found!${RESET}"
         exit 1
     fi
-    
-    echo -e "${GREEN}✓ Downloaded: hecate-os-$EDITION.iso${RESET}"
+
+    echo -e "${GREEN}✓ Downloaded: hecate-os.iso${RESET}"
     echo -e "\n${CYAN}Create bootable USB:${RESET}"
-    echo -e "  sudo dd if=hecate-os-$EDITION.iso of=/dev/sdX bs=4M status=progress"
+    echo -e "  sudo dd if=hecate-os.iso of=/dev/sdX bs=4M status=progress"
 }
 
 # Optimize current system

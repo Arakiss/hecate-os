@@ -45,7 +45,6 @@ Check these locations:
 
 ## HecateOS Version
 - **Version**: (run `cat /etc/os-release | grep VERSION_ID`)
-- **Edition**: (Ultimate/Workstation/Gaming/Developer/Lite/Server)
 
 ## Additional Context
 Any other relevant information.

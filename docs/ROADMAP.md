@@ -10,7 +10,7 @@
 
 ### What's Theoretical/Untested
 - ⚠️ **AMD Support** - Configs exist but untested (no AMD hardware)
-- ⚠️ **Multiple Editions** - Structure ready but only Ultimate is real focus
+- ⚠️ **Single ISO** - Auto hardware detection, no multiple editions
 - ⚠️ **Benchmarks** - All numbers are estimates until real testing
 - ⚠️ **Welcome App** - Written but needs real-world testing
 
@@ -63,7 +63,7 @@ sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.
 
 ## Version 0.2.0 Goals (Beta)
 - [ ] Package list cleanup (remove non-existent packages)
-- [ ] All 6 editions tested
+- [ ] More hardware tested
 - [ ] CI/CD fully working
 
 ## Version 1.0.0 Goals (Community-Driven)

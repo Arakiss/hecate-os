@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Automatic optimization application (`apply-optimizations.sh`)
 - NVIDIA driver installer with GPU tier detection
 - Benchmark suite for performance testing
-- 6 edition build system (Ultimate, Workstation, Gaming, Developer, Lite, Server)
+- Single ISO with automatic hardware profiling
 - Comprehensive package lists for development, AI/ML, and performance tools
 - GRUB theme customization
 - Docker daemon pre-configuration
@@ -37,7 +37,7 @@ First alpha release. Hardware detection and optimization framework complete.
 ### Known Limitations
 - AMD support is theoretical (untested)
 - Laptop optimizations not implemented
-- Only Ultimate edition thoroughly tested
+- Only high-end Intel/NVIDIA hardware tested
 
 [Unreleased]: https://github.com/Arakiss/hecate-os/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/Arakiss/hecate-os/releases/tag/v0.1.0

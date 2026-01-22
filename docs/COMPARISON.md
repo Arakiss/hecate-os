@@ -47,7 +47,7 @@ HecateOS chooses Ubuntu because when you're training models for 48 hours straigh
 | **Scope** | Complete OS replacement | Ubuntu configuration |
 | **Hardware** | Auto-detects and optimizes | Generic setup |
 | **Performance** | Kernel-level optimizations | User-space tools |
-| **Flexibility** | Multiple editions | One configuration |
+| **Flexibility** | Auto hardware profiling | One configuration |
 
 ## HecateOS vs Pop!_OS
 
@@ -74,5 +74,5 @@ HecateOS chooses Ubuntu because when you're training models for 48 hours straigh
 1. **Adaptive Hardware Detection**: No other distro automatically adjusts ALL settings based on detected hardware
 2. **Progressive RAM Scaling**: ZRAM configuration scales from 8GB to 512GB
 3. **GPU Tier System**: Different optimizations for flagship vs budget GPUs
-4. **Edition System**: Six different ISOs for different use cases
+4. **Single ISO**: One ISO with automatic hardware detection and profiling
 5. **Transparent Trade-offs**: Clear documentation about performance vs security choices

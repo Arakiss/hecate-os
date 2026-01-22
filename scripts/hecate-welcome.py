@@ -212,30 +212,21 @@ class HecateWelcome:
     
     def step_profile_selection(self):
         """Select system profile"""
-        recommended = self.hardware_profile.get('system', {}).get('profile', 'standard')
-        
         options = [
-            (f"Ultimate (Recommended)" if recommended == "ultimate" else "Ultimate",
-             "AI/ML workstation with maximum performance"),
-            (f"Workstation (Recommended)" if recommended == "workstation" else "Workstation",
-             "Professional workstation for development"),
-            (f"Gaming (Recommended)" if recommended == "gaming" else "Gaming",
-             "Optimized for gaming and streaming"),
-            (f"Developer (Recommended)" if recommended == "developer" else "Developer",
-             "Software development environment"),
-            (f"Server (Recommended)" if recommended == "server" else "Server",
-             "Headless server configuration"),
-            ("Automatic", "Let HecateOS decide based on hardware")
+            ("Automatic (Recommended)", "Let HecateOS optimize based on your hardware"),
+            ("High Performance", "Maximum performance, higher power consumption"),
+            ("Balanced", "Good performance with reasonable power usage"),
+            ("Power Saver", "Reduce power consumption, lower performance")
         ]
-        
+
         choice = self.show_menu(
-            "Select System Profile",
+            "System Optimization",
             options,
-            f"Detected hardware suggests: {recommended.upper()} profile"
+            "How should we optimize your system?"
         )
-        
+
         if choice >= 0:
-            profiles = ["ultimate", "workstation", "gaming", "developer", "server", "auto"]
+            profiles = ["auto", "performance", "balanced", "powersave"]
             self.user_choices['profile'] = profiles[choice]
     
     def step_optimizations(self):
@@ -261,22 +252,22 @@ class HecateWelcome:
         """Configure NVIDIA settings if GPU detected"""
         if self.hardware_profile.get('gpu', {}).get('vendor') != 'nvidia':
             return  # Skip if no NVIDIA GPU
-        
+
         options = [
-            ("Gaming Mode", "Optimize for low latency and high FPS"),
-            ("Creator Mode", "Optimize for stability and quality"),
-            ("Compute Mode", "Optimize for CUDA/AI workloads"),
-            ("Automatic", "Let HecateOS configure automatically")
+            ("Automatic (Recommended)", "Let HecateOS configure based on usage"),
+            ("Low Latency", "Optimize for responsiveness and real-time work"),
+            ("Compute", "Optimize for CUDA/AI workloads"),
+            ("Quality", "Optimize for stability and visual quality")
         ]
-        
+
         choice = self.show_menu(
             "NVIDIA GPU Configuration",
             options,
             f"GPU: {self.hardware_profile.get('gpu', {}).get('model', 'Unknown')}"
         )
-        
+
         if choice >= 0:
-            modes = ["gaming", "creator", "compute", "auto"]
+            modes = ["auto", "latency", "compute", "quality"]
             self.user_choices['nvidia_mode'] = modes[choice]
     
     def step_developer_tools(self):
@@ -287,17 +278,17 @@ class HecateWelcome:
             ("System Programming", "C/C++, Rust, Go"),
             ("Data Science", "Python, R, Julia, Jupyter"),
             ("DevOps", "Docker, Kubernetes, Terraform"),
-            ("Minimal", "Just the basics")
+            ("None", "Skip development tools")
         ]
-        
+
         choice = self.show_menu(
             "Development Tools",
             options,
             "Which development stack would you like?"
         )
-        
+
         if choice >= 0:
-            stacks = ["full", "web", "systems", "datascience", "devops", "minimal"]
+            stacks = ["full", "web", "systems", "datascience", "devops", "none"]
             self.user_choices['dev_stack'] = stacks[choice]
     
     def step_privacy_telemetry(self):

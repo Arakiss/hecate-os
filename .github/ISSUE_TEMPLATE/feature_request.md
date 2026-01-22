@@ -19,7 +19,7 @@ Any alternative solutions or features you've considered.
 If this feature is hardware-specific:
 - **CPU Type**: (Intel/AMD/ARM)
 - **GPU Type**: (NVIDIA/AMD/Intel)
-- **Use Case**: (AI/ML, Gaming, Development, Server)
+- **Use Case**: (AI/ML, Gaming, Development, etc.)
 
 ## Additional Context
 Any other context, screenshots, or examples.

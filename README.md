@@ -13,19 +13,18 @@ Most Linux distros ship with generic configs. You install Ubuntu, then spend hou
 On first boot, HecateOS runs `hardware-detector.sh` which:
 
 1. **Detects your hardware** — CPU model/generation, GPU vendor/model/VRAM, RAM amount/speed, storage type
-2. **Creates a profile** — Classifies your system as Ultimate, Gaming, Developer, Server, or Minimal
+2. **Creates a profile** — Automatically classifies your system based on capabilities
 3. **Applies optimizations** — Sets kernel parameters, sysctl values, GPU settings, I/O schedulers specific to YOUR hardware
 
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│ Hardware Detect │ ──▶ │ Profile Create  │ ──▶ │ Apply Tuning    │
+│ Hardware Detect │ ──▶ │ Auto Profile    │ ──▶ │ Apply Tuning    │
 │                 │     │                 │     │                 │
-│ • CPU gen       │     │ • Ultimate      │     │ • sysctl.conf   │
-│ • GPU tier      │     │ • Gaming        │     │ • GRUB params   │
-│ • RAM amount    │     │ • Developer     │     │ • GPU settings  │
-│ • Storage type  │     │ • Server        │     │ • I/O scheduler │
-└─────────────────┘     │ • Minimal       │     └─────────────────┘
-                        └─────────────────┘
+│ • CPU gen       │     │ Based on:       │     │ • sysctl.conf   │
+│ • GPU tier      │     │ • GPU VRAM      │     │ • GRUB params   │
+│ • RAM amount    │     │ • RAM amount    │     │ • GPU settings  │
+│ • Storage type  │     │ • CPU cores     │     │ • I/O scheduler │
+└─────────────────┘     └─────────────────┘     └─────────────────┘
 ```
 
 ## What Gets Tuned
@@ -115,7 +114,7 @@ Need testers with:
 - AMD Ryzen CPUs (Zen 2, 3, 4)
 - AMD GPUs (RX 6000/7000)
 - Laptops (battery/thermal management)
-- Lower-end hardware (validate Lite edition)
+- Lower-end hardware (8GB RAM, older GPUs)
 
 See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for guidelines.
 

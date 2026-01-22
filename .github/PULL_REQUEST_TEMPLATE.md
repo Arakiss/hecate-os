@@ -15,10 +15,9 @@ Brief description of the changes.
 - [ ] I have tested the installation process
 
 ### Hardware Tested (if applicable)
-- **CPU**: 
-- **GPU**: 
+- **CPU**:
+- **GPU**:
 - **RAM**: 
-- **Edition**: 
 
 ## Checklist
 - [ ] My code follows the project's style guidelines

@@ -1,27 +1,22 @@
-# HecateOS Installation Guide 🚀
+# HecateOS Installation Guide
 
 ## Quick Start
 
 ### 1. Download HecateOS
 
-Choose your edition based on your hardware:
+Download the ISO from [Releases](https://github.com/Arakiss/hecate-os/releases).
 
-- **Ultimate**: RTX 4080/4090 + 64GB+ RAM → AI/ML powerhouse
-- **Workstation**: RTX 3060+ + 32GB+ RAM → Professional development
-- **Gaming**: Any NVIDIA GPU + 16GB+ RAM → Gaming optimized
-- **Developer**: 16GB+ RAM → Coding focused
-- **Lite**: 8GB+ RAM → Standard computing
-- **Server**: Headless servers → No GUI
+One ISO, automatic hardware detection. No editions to choose.
 
 ### 2. Create Bootable USB
 
 #### Linux/macOS:
 ```bash
-# Find your USB device (be careful!)
+# Find your USB device
 lsblk  # or diskutil list on macOS
 
 # Write ISO to USB (replace sdX with your device)
-sudo dd if=hecate-os-ultimate-*.iso of=/dev/sdX bs=4M status=progress sync
+sudo dd if=hecate-os-*.iso of=/dev/sdX bs=4M status=progress sync
 ```
 
 #### Windows:
@@ -42,32 +37,29 @@ sudo dd if=hecate-os-ultimate-*.iso of=/dev/sdX bs=4M status=progress sync
    - Set USB as first boot device
 
 2. **HecateOS Installer**
-   - System will automatically detect your hardware
-   - Recommended edition will be highlighted
+   - System automatically detects your hardware
    - Choose installation type:
      - **Automatic**: Let HecateOS decide everything
      - **Custom**: Choose your settings
 
 3. **Disk Setup** (for Dual-Boot)
    ```
-   ⚠️ IMPORTANT: HecateOS will NOT touch Windows partitions
-   
+   HecateOS will NOT touch Windows partitions
+
    Select your Linux drive (e.g., Samsung 990 PRO)
    Partitioning scheme:
    - /boot/efi : 1GB (UEFI)
-   - /boot     : 2GB 
+   - /boot     : 2GB
    - /         : 200GB (root)
    - /home     : 100GB
    - /var      : Remaining space
    ```
 
 4. **First Boot Setup**
-   - Welcome wizard launches automatically
-   - Detects hardware and applies optimizations
-   - Select your profile and preferences
+   - Detects hardware and applies optimizations automatically
    - Driver installation (automatic)
 
-## Hardware Detection & Optimization
+## Hardware Detection
 
 HecateOS automatically detects and optimizes for:
 
@@ -77,29 +69,17 @@ HecateOS automatically detects and optimizes for:
 - **Older CPUs**: Standard performance tuning
 
 ### GPUs
-- **NVIDIA RTX 40 Series**: Driver 550 + CUDA 12.6
+- **NVIDIA RTX 40 Series**: Driver 570 + CUDA 12.8
 - **NVIDIA RTX 30 Series**: Driver 535 + CUDA 12.3
-- **AMD RX 7000/6000**: AMDGPU/PRO drivers
+- **AMD RX 7000/6000**: AMDGPU drivers
 - **Intel Arc/Xe**: Intel media drivers
 
 ### Memory
-- **128GB+**: Extreme performance mode
-- **64GB+**: High performance mode
+- **64GB+**: High performance mode, low swappiness
 - **32GB+**: Balanced mode
 - **<32GB**: Optimized swap settings
 
 ## Post-Installation
-
-### Run Post-Install Script
-```bash
-sudo hecate-post-install
-```
-
-This will:
-- Update all packages
-- Configure NVIDIA Container Toolkit
-- Apply final optimizations
-- Detect Windows for dual-boot
 
 ### Verify Installation
 ```bash
@@ -114,7 +94,7 @@ nvidia-smi  # For NVIDIA
 glxinfo | grep renderer  # For any GPU
 
 # Test Docker with GPU
-docker run --rm --gpus all nvidia/cuda:12.6.0-base-ubuntu24.04 nvidia-smi
+docker run --rm --gpus all nvidia/cuda:12.8.0-base-ubuntu24.04 nvidia-smi
 ```
 
 ## Dual-Boot with Windows
@@ -171,32 +151,6 @@ sudo efibootmgr -v  # List entries
 sudo efibootmgr -c -d /dev/nvme2n1 -p 1 -L "HecateOS" -l '\EFI\ubuntu\grubx64.efi'
 ```
 
-## Switching Editions
-
-Change your HecateOS edition after installation:
-
-```bash
-# Check current edition
-hecate-info --version
-
-# Switch edition (downloads packages)
-sudo hecate-edition switch ultimate
-
-# Available: ultimate, workstation, gaming, developer, lite, server
-```
-
-## Network Installation
-
-Install HecateOS over network (PXE):
-
-```bash
-# On server
-sudo hecate-pxe-server start
-
-# Boot target machine from network
-# Select HecateOS from PXE menu
-```
-
 ## Uninstallation
 
 To remove HecateOS (keeping Windows):
@@ -208,19 +162,13 @@ To remove HecateOS (keeping Windows):
    bcdedit /set {bootmgr} path \EFI\Microsoft\Boot\bootmgfw.efi
    ```
 
-## Support
-
-- **Documentation**: https://hecateos.dev/docs
-- **Discord**: https://discord.gg/hecate-os
-- **GitHub Issues**: https://github.com/hecate-os/hecate-os/issues
-
 ## System Requirements
 
 ### Minimum
 - CPU: 4 cores / 8 threads
 - RAM: 8GB
 - Storage: 128GB SSD
-- GPU: Optional (integrated OK for Lite/Developer)
+- GPU: Optional (integrated OK)
 
 ### Recommended
 - CPU: Intel i7-12700K / AMD Ryzen 7 5800X or better
@@ -228,12 +176,6 @@ To remove HecateOS (keeping Windows):
 - Storage: 512GB NVMe SSD
 - GPU: NVIDIA RTX 3060 or better
 
-### Optimal (for Ultimate)
-- CPU: Intel i9-13900K / AMD Ryzen 9 7950X
-- RAM: 128GB DDR5-6000+
-- Storage: 2TB NVMe Gen5
-- GPU: NVIDIA RTX 4090
+## Support
 
----
-
-**Welcome to HecateOS - Unleash the beast within your machine!** 🔥
+- **GitHub Issues**: https://github.com/Arakiss/hecate-os/issues
