@@ -1,178 +1,148 @@
 # HecateOS
 
-**An adaptive, performance-first Linux distribution that automatically optimizes for your hardware.**
+A Linux distribution that detects your hardware and applies specific optimizations automatically. Based on Ubuntu 24.04 LTS.
 
-<div align="center">
-  
-  [![Version](https://img.shields.io/github/v/release/Arakiss/hecate-os?style=for-the-badge)](https://github.com/Arakiss/hecate-os/releases)
-  [![Based on Ubuntu](https://img.shields.io/badge/Based%20on-Ubuntu%2024.04%20LTS-E95420?style=for-the-badge&logo=ubuntu)](https://ubuntu.com)
-  [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
-  [![Semantic Versioning](https://img.shields.io/badge/semver-2.0.0-green?style=for-the-badge)](https://semver.org)
-  
-</div>
+> **Status: Alpha (v0.1.0)** — Framework complete, tested on one machine. No ISO releases yet.
 
----
+## The Problem
 
-## What is HecateOS?
+Most Linux distros ship with generic configs. You install Ubuntu, then spend hours tweaking sysctl, GRUB parameters, GPU drivers, and kernel settings. Or you don't, and leave performance on the table.
 
-HecateOS is a performance-optimized Linux distribution based on Ubuntu 24.04 LTS.
+## What HecateOS Does
 
-Unlike traditional distributions with one-size-fits-all configurations, HecateOS detects your CPU, GPU, RAM, and storage, then automatically applies optimal settings for maximum performance. Designed for AI/ML engineers, developers, and power users who want their hardware to run at peak efficiency without manual tuning.
+On first boot, HecateOS runs `hardware-detector.sh` which:
 
-## Key Differentiators
+1. **Detects your hardware** — CPU model/generation, GPU vendor/model/VRAM, RAM amount/speed, storage type
+2. **Creates a profile** — Classifies your system as Ultimate, Gaming, Developer, Server, or Minimal
+3. **Applies optimizations** — Sets kernel parameters, sysctl values, GPU settings, I/O schedulers specific to YOUR hardware
 
-- **🚀 Extreme Performance**: Pre-configured kernel optimizations for Intel 13th gen+ and NVIDIA RTX 40 series
-- **🎮 Native NVIDIA Support**: RTX 4090 optimized with CUDA, persistence mode, and IRQ affinity tuning
-- **💾 Smart Memory Management**: ZRAM compression for 128GB+ RAM systems
-- **🔧 Zero-Config Dual Boot**: Seamless Windows 11 + HecateOS coexistence
-- **🐳 Container-First**: Docker with native NVIDIA GPU runtime pre-configured
-- **⚙️ Hardware Optimized**: Specific tuning for NVMe Gen5, DDR5-6400, and PCIe 5.0
-- **🛡️ No Compromises**: Mitigations disabled, performance governor, all limiters removed
-
-## 🎯 Adaptive Hardware Support
-
-HecateOS **automatically detects and optimizes** for your hardware. No target needed:
-
-| Component | What HecateOS Does | Optimization Level |
-|-----------|-------------------|-------------------|
-| **Any Intel CPU** | Detects generation, applies P-State/C-State tuning | Auto-scaled |
-| **Any AMD CPU** | Detects Zen version, applies AMD-specific tuning | Auto-scaled |
-| **8GB → 512GB RAM** | Adjusts ZRAM, swappiness, dirty ratios dynamically | Progressive |
-| **Any NVIDIA GPU** | Selects optimal driver (570/535/525/470) | Tier-based |
-| **Any AMD GPU** | Chooses AMDGPU or PRO driver automatically | Model-based |
-| **Any Storage** | Detects NVMe gen, SATA SSD, or HDD and tunes I/O | Type-aware |
-
-## 🔮 Philosophy
-
-Unlike generic Linux distributions that use one-size-fits-all configs, HecateOS follows the principle of **"Adaptive Excellence"**:
-
-1. **Hardware-Aware**: Detects your exact CPU, GPU, RAM, and storage
-2. **Auto-Optimization**: Applies specific tuning for YOUR hardware
-3. **No Manual Tuning**: The system figures out the best settings
-4. **Progressive Scaling**: More RAM? Better GPU? It adapts accordingly
-
-## 🚀 Quick Start
-
-### Download ISO
-```bash
-wget https://github.com/Arakiss/hecate-os/releases/latest/download/hecate-os-24.04-amd64.iso
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│ Hardware Detect │ ──▶ │ Profile Create  │ ──▶ │ Apply Tuning    │
+│                 │     │                 │     │                 │
+│ • CPU gen       │     │ • Ultimate      │     │ • sysctl.conf   │
+│ • GPU tier      │     │ • Gaming        │     │ • GRUB params   │
+│ • RAM amount    │     │ • Developer     │     │ • GPU settings  │
+│ • Storage type  │     │ • Server        │     │ • I/O scheduler │
+└─────────────────┘     │ • Minimal       │     └─────────────────┘
+                        └─────────────────┘
 ```
 
-### Create Bootable USB
-```bash
-# Using dd (Linux/macOS)
-sudo dd if=hecate-os-24.04-amd64.iso of=/dev/sdX bs=4M status=progress
+## What Gets Tuned
 
-# Or use Ventoy for multi-boot USB
+**CPU** — Intel P-State or AMD P-State governor, C-State limits, turbo boost settings
+
+**Memory** — Swappiness (10 for high RAM, 60 for low), dirty ratios, ZRAM compression ratio, transparent hugepages
+
+**GPU (NVIDIA)** — Driver version by generation (570 for RTX 40, 535 for RTX 30, etc.), persistence mode, power limits, compute mode
+
+**Storage** — I/O scheduler (none for NVMe Gen4+, mq-deadline for older), read-ahead values
+
+**Kernel** — `mitigations=off` for ~10% perf gain (configurable), `intel_pstate=active`, IOMMU, PCIe ASPM off
+
+## Editions
+
+Six ISO variants, same detection system, different package sets:
+
+| Edition | Target | Packages | Size |
+|---------|--------|----------|------|
+| **Ultimate** | AI/ML workstations | Full CUDA stack, scientific Python | ~6GB |
+| **Workstation** | Professional use | NVIDIA drivers, Docker, dev tools | ~4GB |
+| **Gaming** | Gaming/streaming | Vulkan, low-latency kernel tweaks | ~3.5GB |
+| **Developer** | Software dev | Languages, containers, databases | ~3GB |
+| **Lite** | Older hardware | Core system, basic tools | ~2GB |
+| **Server** | Headless | No GUI, containers, monitoring | ~1.5GB |
+
+## Tested Hardware
+
+Actually tested on:
+- Intel Core i9-13900K
+- NVIDIA RTX 4090
+- 128GB DDR5-6400
+- Samsung 990 PRO NVMe
+
+Should work on (detection logic exists but untested):
+- Intel 10th gen+
+- AMD Ryzen (Zen 2+)
+- NVIDIA GTX 10 series+
+- AMD GPUs (basic support)
+- 8GB-512GB RAM
+- Any NVMe/SATA SSD/HDD
+
+## Project Structure
+
+```
+hecate-os/
+├── scripts/
+│   ├── hardware-detector.sh    # 460 lines — detects and profiles hardware
+│   ├── apply-optimizations.sh  # 270 lines — applies profile-specific tuning
+│   ├── hecate-driver-installer.sh  # GPU driver selection
+│   └── hecate-benchmark.sh     # Performance testing
+├── config/
+│   ├── package-lists/          # Packages per edition
+│   ├── includes.chroot/        # System configs (sysctl, GRUB, docker)
+│   └── hooks/                   # Build-time scripts
+├── editions/
+│   └── build-edition.sh        # Build specific edition ISO
+└── build.sh                    # Main build script
 ```
 
-### Installation
-1. Boot from USB
-2. Select "Install HecateOS"
-3. Choose your NVMe drive (preserves Windows on other drives)
-4. Reboot and enjoy maximum performance
+## Building
 
-## 💻 What's Included
-
-### System Optimizations
-- Intel P-State active governor
-- IOMMU enabled for GPU passthrough
-- C-States minimized for low latency
-- PCIe ASPM disabled
-- Spectre/Meltdown mitigations disabled (10-15% performance gain)
-
-### Development Stack
-- **Languages**: Python 3.12 (3.14 via pyenv), Node.js 18 (24 LTS via nvm), Rust, Go
-- **Containers**: Docker CE with NVIDIA Container Toolkit
-- **AI/ML**: CUDA, cuDNN (install PyTorch/TensorFlow via pip for GPU support)
-- **Databases**: PostgreSQL, Redis, SQLite
-- **Tools**: Neovim, gh (GitHub CLI), tmux, zsh
-
-### Performance Tools
-- btop (better htop)
-- nvtop (GPU monitoring)
-- iostat, iotop (I/O monitoring)
-- powertop (power optimization)
-- turbostat (CPU frequency monitoring)
-
-## 🛠️ Building from Source
-
-### Prerequisites
 ```bash
-# On Ubuntu 22.04+ or Debian 12+
-sudo apt update
-sudo apt install -y live-build debootstrap squashfs-tools xorriso
-```
+# Install dependencies (Ubuntu 22.04+)
+sudo apt install live-build debootstrap squashfs-tools xorriso
 
-### Build Process
-```bash
-# Clone repository
+# Clone and build
 git clone https://github.com/Arakiss/hecate-os.git
 cd hecate-os
-
-# Run build script
-sudo ./build.sh
-
-# ISO will be generated in iso/
+sudo ./build.sh              # Builds Ultimate edition
+sudo ./editions/build-edition.sh developer  # Builds specific edition
 ```
 
-### Customization
-Edit configuration files in `config/` before building:
-- `package-lists/`: Add/remove packages
-- `includes.chroot/`: Add custom files
-- `hooks/`: Modify build hooks
+ISO output: `iso/hecate-os-0.1.0-amd64.iso`
 
-## 📊 Expected Performance Gains
+## Performance Claims
 
-*Note: These are theoretical improvements based on optimizations. Real benchmarks coming after first ISO build.*
+These are estimates based on the optimizations applied. No benchmarks yet.
 
-| Optimization | Expected Impact | Reason |
-|--------------|----------------|--------|
-| Mitigations disabled | +5-15% | Spectre/Meltdown overhead removed |
-| Performance governor | +3-8% | No frequency scaling delays |
-| ZRAM vs disk swap | +10-20% | Memory compression faster than disk |
-| Custom kernel params | +2-5% | Reduced latency, better scheduling |
-| **Estimated Total** | **+15-30%** | *Actual results will vary by workload* |
+| Change | Expected Gain | Why |
+|--------|---------------|-----|
+| `mitigations=off` | 5-15% | Removes Spectre/Meltdown overhead |
+| Performance governor | 3-8% | No frequency scaling latency |
+| ZRAM vs disk swap | 10-20% | Compression faster than disk I/O |
+| Tuned sysctl | 2-5% | Better memory/network/scheduler settings |
 
-## 🤝 Contributing
+Real benchmarks will come after community testing on varied hardware.
 
-We welcome contributions! Please see [CONTRIBUTING.md](docs/CONTRIBUTING.md) for guidelines.
+## Security Trade-offs
 
-### Areas of Interest
-- Hardware-specific optimizations
-- Performance tuning scripts
-- Benchmark automation
-- Documentation improvements
+HecateOS prioritizes performance over security hardening:
 
-## 📜 License
+- Spectre/Meltdown mitigations disabled by default
+- SSH enabled by default
+- Firewall installed but not enabled
 
-HecateOS is released under the MIT License. See [LICENSE](LICENSE) for details.
+See [SECURITY.md](SECURITY.md) for details and how to re-enable protections.
 
-### Attribution
-- Based on Ubuntu 24.04 LTS by Canonical
-- Inspired by Pop!_OS approach to desktop Linux
-- NVIDIA drivers and CUDA are property of NVIDIA Corporation
+## Contributing
 
-## 🔗 Resources
+Need testers with:
+- AMD Ryzen CPUs (Zen 2, 3, 4)
+- AMD GPUs (RX 6000/7000)
+- Laptops (battery/thermal management)
+- Lower-end hardware (validate Lite edition)
 
-- **Documentation**: [docs/](docs/)
-- **Roadmap**: [docs/ROADMAP.md](docs/ROADMAP.md)
-- **Issues**: [GitHub Issues](https://github.com/Arakiss/hecate-os/issues)
-- **Security**: [SECURITY.md](SECURITY.md)
+See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for guidelines.
 
----
+## Why "HecateOS"?
 
-<div align="center">
-  <p><b>HecateOS</b> - Unleash the beast within your machine</p>
-  <p>Made with 🖤 by Arakiss</p>
-</div>
+Named after my cat, who sits at the crossroads between my keyboard and monitor. The Greek goddess Hecate ruled crossroads and magic. This distro lives at the crossroads between Windows dual-boot and Linux, between generic configs and hardware-specific tuning.
+
+## License
+
+MIT. Based on Ubuntu 24.04 LTS by Canonical.
 
 ---
 
-<details>
-<summary><b>Why "HecateOS"?</b></summary>
-
-Named after my cat Hecate, who I named after the Greek goddess of crossroads and magic. She likes to sit at the crossroads between my keyboard and monitor while I code.
-
-The name fits perfectly - a distro that lives at the crossroads between Windows and Linux, between raw hardware and optimized software. Plus, my cat approves. 🐱
-</details>
+**Links:** [Roadmap](docs/ROADMAP.md) · [Security](SECURITY.md) · [Issues](https://github.com/Arakiss/hecate-os/issues)
