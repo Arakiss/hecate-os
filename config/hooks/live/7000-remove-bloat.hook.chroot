@@ -1,0 +1,44 @@
+#!/bin/bash
+# HecateOS Live-Build Hook: Remove Unnecessary Packages
+# Removes bloat that comes with Ubuntu base
+set -e
+
+echo "HecateOS: Removing unnecessary packages..."
+
+# List of packages to remove (only if they exist)
+REMOVE_PACKAGES=(
+    # Snap
+    snapd
+    gnome-software-plugin-snap
+
+    # Cloud (not needed for workstation)
+    cloud-init
+    cloud-guest-utils
+
+    # Ubuntu telemetry
+    ubuntu-report
+    popularity-contest
+    apport
+    whoopsie
+
+    # Accessibility (can be installed if needed)
+    brltty
+    speech-dispatcher
+
+    # Other services
+    avahi-daemon
+    modemmanager
+)
+
+for pkg in "${REMOVE_PACKAGES[@]}"; do
+    if dpkg -l "$pkg" &>/dev/null; then
+        echo "  Removing: $pkg"
+        apt-get purge -y "$pkg" 2>/dev/null || true
+    fi
+done
+
+# Clean up
+apt-get autoremove -y 2>/dev/null || true
+apt-get clean
+
+echo "HecateOS: Bloat removal complete"
