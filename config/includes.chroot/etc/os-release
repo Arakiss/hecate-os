@@ -1,0 +1,16 @@
+PRETTY_NAME="HecateOS 24.04 LTS (Crossroads)"
+NAME="HecateOS"
+VERSION_ID="24.04"
+VERSION="24.04 LTS (Crossroads)"
+VERSION_CODENAME=crossroads
+ID=hecate
+ID_LIKE="ubuntu debian"
+HOME_URL="https://hecate-os.dev"
+SUPPORT_URL="https://github.com/hecate-os/hecate-os/issues"
+BUG_REPORT_URL="https://github.com/hecate-os/hecate-os/issues"
+PRIVACY_POLICY_URL="https://hecate-os.dev/privacy"
+UBUNTU_CODENAME=noble
+LOGO="hecate-logo"
+BUILD_ID="2024.01.22"
+VARIANT="Workstation"
+VARIANT_ID="workstation"

@@ -1,0 +1,55 @@
+# HecateOS Systemd Service Presets
+# Services to enable/disable by default
+
+# Enable essential services
+enable ssh.service
+enable NetworkManager.service
+enable systemd-resolved.service
+enable systemd-timesyncd.service
+
+# Performance services
+enable tuned.service
+enable thermald.service
+enable zramswap.service
+enable irqbalance.service
+
+# NVIDIA services
+enable nvidia-persistenced.service
+enable nvidia-powerd.service
+
+# Container services
+enable docker.service
+enable docker.socket
+enable containerd.service
+
+# HecateOS custom services
+enable hecate-nvidia-irq-affinity.service
+enable hecate-performance-governor.service
+enable hecate-welcome.service
+
+# Disable unnecessary services
+disable snapd.service
+disable snapd.socket
+disable snapd.seeded.service
+disable ModemManager.service
+disable cups.service
+disable cups-browsed.service
+disable avahi-daemon.service
+disable bluetooth.service
+disable cloud-init.service
+disable cloud-init-local.service
+disable cloud-config.service
+disable cloud-final.service
+disable apt-daily.timer
+disable apt-daily-upgrade.timer
+disable motd-news.timer
+disable ubuntu-advantage.service
+disable whoopsie.service
+disable apport.service
+disable kerneloops.service
+
+# Disable sleep/suspend (workstation should always be on)
+disable sleep.target
+disable suspend.target
+disable hibernate.target
+disable hybrid-sleep.target

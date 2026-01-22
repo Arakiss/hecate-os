@@ -1,0 +1,90 @@
+# HecateOS GRUB Theme Configuration
+# A dark, minimal theme optimized for high-end workstations
+
+# General settings
+title-text: "HecateOS Boot Menu"
+title-color: "#B19CD9"
+title-font: "DejaVu Sans Bold 20"
+desktop-image: "background.png"
+desktop-color: "#1a1a2e"
+terminal-font: "Unifont Regular 16"
+
+# Boot menu
+boot_menu {
+  left = 15%
+  width = 70%
+  top = 30%
+  height = 40%
+  
+  item_color = "#FFFFFF"
+  item_font = "DejaVu Sans Regular 16"
+  selected_item_color = "#1a1a2e"
+  selected_item_font = "DejaVu Sans Bold 16"
+  selected_item_pixmap_style = "select_*.png"
+  
+  item_height = 40
+  item_padding = 15
+  item_spacing = 10
+  
+  scrollbar = true
+  scrollbar_width = 10
+  scrollbar_thumb = "slider_*.png"
+}
+
+# Progress bar
+progress_bar {
+  id = "__timeout__"
+  left = 25%
+  width = 50%
+  top = 75%
+  height = 20
+  
+  font = "DejaVu Sans Regular 12"
+  text_color = "#B19CD9"
+  text = "@TIMEOUT_NOTIFICATION_SHORT@"
+  
+  bar_style = "progress_bar_*.png"
+  highlight_style = "progress_highlight_*.png"
+}
+
+# Labels
+label {
+  left = 15%
+  top = 88%
+  width = 70%
+  height = 20
+  
+  id = "__help__"
+  text = "Use ↑↓ arrows to select, Enter to boot, 'e' to edit, 'c' for command line"
+  font = "DejaVu Sans Regular 10"
+  color = "#888888"
+  align = "center"
+}
+
+# Component styles
++ vbox {
+  top = 100
+  left = 15%
+  width = 70%
+  + label { 
+    text = "HecateOS 24.04 LTS - High Performance Linux" 
+    font = "DejaVu Sans Bold 18"
+    color = "#FFFFFF"
+    align = "center"
+  }
+}
+
+# Message box for notifications
+message_box {
+  left = 20%
+  top = 40%
+  width = 60%
+  height = 20%
+  
+  bg_color = "#1a1a2e"
+  border_color = "#B19CD9"
+  border_width = 2
+  
+  text_color = "#FFFFFF"
+  font = "DejaVu Sans Regular 14"
+}

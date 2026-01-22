@@ -1,0 +1,21 @@
+[Unit]
+Description=NVIDIA Persistence Daemon
+Wants=syslog.target
+After=syslog.target
+
+[Service]
+Type=forking
+User=nvidia-persistenced
+Group=nvidia-persistenced
+RuntimeDirectory=nvidia-persistenced
+RuntimeDirectoryMode=0755
+ExecStart=/usr/bin/nvidia-persistenced --user nvidia-persistenced --persistence-mode --verbose
+ExecStopPost=/bin/rm -rf /var/run/nvidia-persistenced
+Restart=on-failure
+RestartSec=5s
+RemainAfterExit=yes
+PrivateTmp=yes
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target

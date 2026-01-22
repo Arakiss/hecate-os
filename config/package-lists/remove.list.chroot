@@ -1,0 +1,83 @@
+# HecateOS - Packages to Remove
+# Unnecessary packages that slow down the system
+
+# Snap (we use native packages)
+snapd
+snap
+gnome-software-plugin-snap
+
+# Cloud stuff (not needed for workstation)
+cloud-init
+cloud-guest-utils
+cloud-initramfs-copymods
+cloud-initramfs-dyn-netconf
+
+# Printing (usually not needed on dev workstation)
+cups
+cups-browsed
+cups-filters
+cups-pk-helper
+printer-driver-*
+
+# Games
+gnome-games
+gnome-mahjongg
+gnome-mines
+gnome-sudoku
+aisleriot
+
+# Accessibility (can be installed if needed)
+brltty
+speech-dispatcher
+orca
+gnome-accessibility-themes
+
+# Other unnecessary services
+avahi-daemon
+avahi-autoipd
+modemmanager
+mobile-broadband-provider-info
+
+# Ubuntu specific telemetry
+ubuntu-report
+popularity-contest
+apport
+whoopsie
+
+# Documentation (saves space)
+man-db
+manpages
+ubuntu-docs
+gnome-user-docs
+
+# Unnecessary fonts for a dev system
+fonts-noto-cjk
+fonts-noto-color-emoji
+
+# Office software (can be installed if needed)
+libreoffice*
+thunderbird
+
+# Media players (minimal system)
+rhythmbox
+totem
+cheese
+
+# Other GNOME apps not needed
+gnome-calendar
+gnome-contacts
+gnome-weather
+gnome-maps
+gnome-music
+gnome-photos
+gnome-todo
+simple-scan
+gnome-characters
+
+# VNC/Remote desktop (install if needed)
+vino
+remmina
+
+# Backup tools (install if needed)
+deja-dup
+duplicity

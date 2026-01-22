@@ -1,0 +1,31 @@
+#!/bin/bash
+# HecateOS Live-Build Hook: Enable Services
+set -e
+
+echo "HecateOS: Enabling system services..."
+
+# Create nvidia-persistenced user if it doesn't exist
+if ! id -u nvidia-persistenced >/dev/null 2>&1; then
+    useradd -r -M -d /var/run/nvidia-persistenced -s /usr/sbin/nologin nvidia-persistenced || true
+fi
+
+# Enable essential services
+systemctl enable ssh || true
+systemctl enable NetworkManager || true
+systemctl enable docker || true
+systemctl enable containerd || true
+
+# Enable performance services
+systemctl enable tuned || true
+systemctl enable thermald || true
+systemctl enable zramswap || true
+systemctl enable irqbalance || true
+
+# Enable NVIDIA services
+systemctl enable nvidia-persistenced || true
+systemctl enable hecate-nvidia-irq-affinity || true
+
+# Apply systemd presets
+systemctl preset-all || true
+
+echo "HecateOS: Services enabled successfully"

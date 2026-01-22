@@ -1,0 +1,195 @@
+#cloud-config
+autoinstall:
+  version: 1
+  
+  # Localization
+  locale: en_US.UTF-8
+  keyboard:
+    layout: es
+    variant: ''
+    toggle: null
+  
+  # Network configuration
+  network:
+    network:
+      version: 2
+      ethernets:
+        ens33:
+          dhcp4: true
+          dhcp6: true
+  
+  # Storage configuration
+  storage:
+    config:
+      # This example assumes installation on /dev/nvme2n1
+      # IMPORTANT: Adjust the disk path to match your Samsung 990 PRO
+      - id: samsung_990_pro
+        type: disk
+        ptable: gpt
+        # Change this to match your actual disk
+        path: /dev/nvme2n1  
+        wipe: superblock-recursive
+        preserve: false
+        grub_device: false
+      
+      # EFI System Partition (1GB)
+      - id: esp_partition
+        type: partition
+        device: samsung_990_pro
+        size: 1073741824  # 1GB in bytes
+        flag: boot
+        number: 1
+        preserve: false
+        grub_device: true
+      
+      - id: esp_format
+        type: format
+        volume: esp_partition
+        fstype: fat32
+        label: HECATE_EFI
+      
+      - id: esp_mount
+        type: mount
+        device: esp_format
+        path: /boot/efi
+      
+      # Boot Partition (2GB)
+      - id: boot_partition
+        type: partition
+        device: samsung_990_pro
+        size: 2147483648  # 2GB in bytes
+        number: 2
+        preserve: false
+      
+      - id: boot_format
+        type: format
+        volume: boot_partition
+        fstype: ext4
+        label: HECATE_BOOT
+      
+      - id: boot_mount
+        type: mount
+        device: boot_format
+        path: /boot
+      
+      # Root Partition (200GB)
+      - id: root_partition
+        type: partition
+        device: samsung_990_pro
+        size: 214748364800  # 200GB in bytes
+        number: 3
+        preserve: false
+      
+      - id: root_format
+        type: format
+        volume: root_partition
+        fstype: ext4
+        label: HECATE_ROOT
+      
+      - id: root_mount
+        type: mount
+        device: root_format
+        path: /
+      
+      # Home Partition (100GB)
+      - id: home_partition
+        type: partition
+        device: samsung_990_pro
+        size: 107374182400  # 100GB in bytes
+        number: 4
+        preserve: false
+      
+      - id: home_format
+        type: format
+        volume: home_partition
+        fstype: ext4
+        label: HECATE_HOME
+      
+      - id: home_mount
+        type: mount
+        device: home_format
+        path: /home
+      
+      # Var Partition (remainder of disk)
+      - id: var_partition
+        type: partition
+        device: samsung_990_pro
+        size: -1  # Use remaining space
+        number: 5
+        preserve: false
+      
+      - id: var_format
+        type: format
+        volume: var_partition
+        fstype: ext4
+        label: HECATE_VAR
+      
+      - id: var_mount
+        type: mount
+        device: var_format
+        path: /var
+  
+  # User configuration
+  identity:
+    hostname: hecate
+    username: petru
+    # Password: hecate (change this!)
+    # Generate with: mkpasswd --method=SHA-512 your-password
+    password: "$6$rounds=4096$HecateOS$NvLXr3YJm8NyfRmV5z3kE1"
+    realname: Petru Arakiss
+  
+  # SSH configuration
+  ssh:
+    install-server: true
+    allow-pw: true
+    authorized-keys: []
+  
+  # Package selection
+  packages:
+    - ubuntu-server
+    - openssh-server
+    - build-essential
+    - git
+    - curl
+    - wget
+  
+  # Disable automatic updates during installation
+  updates: security
+  
+  # Post-installation commands
+  late-commands:
+    # Add user to necessary groups
+    - curtin in-target --target=/target -- usermod -aG sudo,docker,video,render petru
+    
+    # Update GRUB to detect Windows
+    - curtin in-target --target=/target -- os-prober
+    - curtin in-target --target=/target -- update-grub
+    
+    # Enable services
+    - curtin in-target --target=/target -- systemctl enable ssh
+    - curtin in-target --target=/target -- systemctl enable docker
+    - curtin in-target --target=/target -- systemctl enable nvidia-persistenced
+    - curtin in-target --target=/target -- systemctl enable hecate-nvidia-irq-affinity
+    
+    # Set performance tuning
+    - curtin in-target --target=/target -- tuned-adm profile throughput-performance
+    
+    # Create HecateOS marker
+    - curtin in-target --target=/target -- touch /etc/hecate-os-installed
+    
+    # Copy post-installation script to user home
+    - curtin in-target --target=/target -- cp /usr/local/bin/hecate-post-install /home/petru/
+    - curtin in-target --target=/target -- chown petru:petru /home/petru/hecate-post-install
+    - curtin in-target --target=/target -- chmod +x /home/petru/hecate-post-install
+  
+  # Automatically reboot after installation
+  shutdown: reboot
+  
+  # Installation source
+  source:
+    id: ubuntu-server
+    search_drivers: true
+  
+  # Enable proprietary drivers
+  drivers:
+    install: true

@@ -1,0 +1,23 @@
+# HecateOS ZRAM Configuration
+# Optimized for 128GB RAM system
+
+# Enable ZRAM
+ENABLED=true
+
+# Compression algorithm (zstd offers best compression ratio)
+ALGO=zstd
+
+# Size as percentage of RAM (25% of 128GB = 32GB compressed swap)
+PERCENT=25
+
+# Number of ZRAM devices (one per CPU thread for i9-13900K = 32)
+DEVICES=32
+
+# ZRAM swap priority (higher than disk swap)
+PRIORITY=32767
+
+# Additional compression options
+COMP_FACTOR=3
+
+# Disable traditional swap files
+SKIP_SWAP=true

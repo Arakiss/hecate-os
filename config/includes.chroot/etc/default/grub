@@ -1,0 +1,48 @@
+# HecateOS GRUB Configuration
+# Optimized for high-performance dual-boot with Windows 11
+
+GRUB_DEFAULT=0
+GRUB_TIMEOUT=10
+GRUB_TIMEOUT_STYLE=menu
+GRUB_DISTRIBUTOR="HecateOS"
+GRUB_CMDLINE_LINUX_DEFAULT="quiet splash intel_pstate=active intel_iommu=on iommu=pt nvme_core.default_ps_max_latency_us=0 pcie_aspm=off processor.max_cstate=1 intel_idle.max_cstate=0 mitigations=off transparent_hugepage=always numa_balancing=enable"
+GRUB_CMDLINE_LINUX=""
+
+# Dual-boot configuration
+GRUB_DISABLE_OS_PROBER=false
+GRUB_DISABLE_SUBMENU=true
+
+# Display settings
+GRUB_GFXMODE=1920x1080x32
+GRUB_GFXPAYLOAD_LINUX=keep
+GRUB_TERMINAL_OUTPUT="gfxterm"
+
+# Theme
+GRUB_THEME="/boot/grub/themes/hecate/theme.txt"
+
+# Background
+GRUB_BACKGROUND="/boot/grub/themes/hecate/background.png"
+
+# Font
+GRUB_FONT="/boot/grub/fonts/unicode.pf2"
+
+# Disable recovery options in menu
+GRUB_DISABLE_RECOVERY="true"
+
+# Save last selection
+GRUB_SAVEDEFAULT=true
+
+# Quick boot
+GRUB_HIDDEN_TIMEOUT=0
+GRUB_RECORDFAIL_TIMEOUT=5
+
+# Terminal input/output
+GRUB_TERMINAL_INPUT="console"
+
+# Uncomment to enable BadRAM filtering
+#GRUB_BADRAM="0x01234567,0xfefefefe,0x89abcdef,0xefefefef"
+
+# Uncomment to get a beep at grub start
+#GRUB_INIT_TUNE="480 440 1"
+
+# Custom menu entries will be added for Windows detection

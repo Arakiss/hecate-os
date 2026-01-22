@@ -1,0 +1,63 @@
+# Build artifacts
+.build/
+auto/
+cache/
+chroot/
+chroot.*
+binary/
+binary.*
+*.iso
+*.img
+*.list
+*.packages
+*.files
+*.contents
+*.zsync
+*.log
+
+# ISO output directory files (but keep the directory)
+iso/*.iso
+iso/*.sha256
+iso/*.md5
+
+# Live-build temp files
+.stage/
+config/binary
+config/bootstrap
+config/chroot
+config/common
+config/source
+
+# System files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.Python
+
+# Secrets and keys
+*.key
+*.pem
+*.crt
+secrets/
+.env
+
+# Keep empty directories
+!iso/.gitkeep
+!branding/.gitkeep
+!docs/.gitkeep
+!scripts/.gitkeep

@@ -1,0 +1,50 @@
+#!/bin/bash
+# HecateOS Live-Build Hook: System Configuration
+set -e
+
+echo "HecateOS: Configuring system settings..."
+
+# Set hostname
+echo "hecate" > /etc/hostname
+
+# Configure hosts file
+cat > /etc/hosts << EOF
+127.0.0.1       localhost
+127.0.1.1       hecate
+::1             localhost ip6-localhost ip6-loopback
+ff02::1         ip6-allnodes
+ff02::2         ip6-allrouters
+EOF
+
+# Create symlink for hecate-info command
+ln -sf /usr/local/share/hecate/hecate-info /usr/local/bin/hecate-info || true
+
+# Set default shell to bash (can be changed by user)
+chsh -s /bin/bash root || true
+
+# Configure sudo to not require password for wheel group
+echo "%wheel ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/wheel
+
+# Create default directories
+mkdir -p /var/crash
+mkdir -p /var/log/hecate
+
+# Set permissions
+chmod +x /usr/local/bin/* || true
+chmod +x /usr/local/share/hecate/* || true
+chmod +x /etc/update-motd.d/* || true
+
+# Disable unnecessary services during build
+systemctl disable apt-daily.timer || true
+systemctl disable apt-daily-upgrade.timer || true
+systemctl disable motd-news.timer || true
+
+# Configure GRUB
+if [ -f /etc/default/grub ]; then
+    update-grub || true
+fi
+
+# Update mlocate database
+updatedb || true
+
+echo "HecateOS: System configuration complete"

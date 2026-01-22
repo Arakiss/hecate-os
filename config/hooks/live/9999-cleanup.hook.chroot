@@ -1,0 +1,75 @@
+#!/bin/bash
+# HecateOS Live-Build Hook: Final Cleanup
+set -e
+
+echo "HecateOS: Performing final cleanup..."
+
+# Remove snap completely if present
+if [ -d /snap ]; then
+    apt purge -y snapd 2>/dev/null || true
+    rm -rf /snap /var/snap /var/lib/snapd /var/cache/snapd || true
+fi
+
+# Remove cloud-init if present
+apt purge -y cloud-init cloud-guest-utils 2>/dev/null || true
+rm -rf /etc/cloud || true
+
+# Remove unnecessary packages
+apt autoremove -y || true
+
+# Clean apt cache
+apt clean
+rm -rf /var/lib/apt/lists/*
+
+# Remove temporary files
+rm -rf /tmp/* /var/tmp/*
+
+# Clear logs
+find /var/log -type f -exec truncate -s 0 {} \;
+
+# Remove bash history
+rm -f /root/.bash_history
+rm -f /home/*/.bash_history
+
+# Remove machine-id (will be regenerated on first boot)
+> /etc/machine-id
+
+# Remove SSH host keys (will be regenerated on first boot)
+rm -f /etc/ssh/ssh_host_*
+
+# Create script to regenerate SSH keys on first boot
+cat > /etc/systemd/system/hecate-firstboot.service << 'EOF'
+[Unit]
+Description=HecateOS First Boot Configuration
+ConditionPathExists=!/var/lib/hecate/.firstboot_done
+Before=sshd.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/hecate-firstboot
+ExecStartPost=/bin/touch /var/lib/hecate/.firstboot_done
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+cat > /usr/local/bin/hecate-firstboot << 'EOF'
+#!/bin/bash
+# Regenerate SSH host keys if missing
+if [ ! -f /etc/ssh/ssh_host_rsa_key ]; then
+    ssh-keygen -A
+fi
+# Generate machine-id if empty
+if [ ! -s /etc/machine-id ]; then
+    systemd-machine-id-setup
+fi
+EOF
+
+chmod +x /usr/local/bin/hecate-firstboot
+systemctl enable hecate-firstboot.service || true
+
+# Create directory for firstboot marker
+mkdir -p /var/lib/hecate
+
+echo "HecateOS: Cleanup complete"

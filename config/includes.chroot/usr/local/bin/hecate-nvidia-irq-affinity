@@ -1,0 +1,75 @@
+#!/bin/bash
+# HecateOS NVIDIA IRQ Affinity Script
+# Assigns NVIDIA and NVMe IRQs to P-cores for optimal performance
+
+set -e
+
+# Colors for output
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RESET='\033[0m'
+
+echo "HecateOS: Optimizing IRQ affinity for NVIDIA GPU and NVMe drives..."
+
+# Detect P-cores (for Intel 12th gen+)
+# P-cores are typically 0-7 for i9-13900K
+P_CORES="0-7"
+
+# Function to set IRQ affinity
+set_irq_affinity() {
+    local pattern=$1
+    local cores=$2
+    
+    for irq in $(grep -E "$pattern" /proc/interrupts | cut -d: -f1 | tr -d ' '); do
+        if [ -f /proc/irq/$irq/smp_affinity_list ]; then
+            echo "$cores" > /proc/irq/$irq/smp_affinity_list 2>/dev/null || true
+            echo -e "${GREEN}✓${RESET} Set IRQ $irq ($pattern) affinity to cores: $cores"
+        fi
+    done
+}
+
+# Set NVIDIA GPU IRQ affinity
+set_irq_affinity "nvidia" "$P_CORES"
+
+# Set NVMe IRQ affinity
+set_irq_affinity "nvme" "$P_CORES"
+
+# Set USB controller IRQ affinity (for low latency input devices)
+set_irq_affinity "xhci" "$P_CORES"
+
+# Set network card IRQ affinity
+set_irq_affinity "eth|enp" "$P_CORES"
+
+# Optimize NVIDIA GPU settings
+if command -v nvidia-smi &> /dev/null; then
+    echo -e "\n${YELLOW}Applying NVIDIA GPU optimizations...${RESET}"
+    
+    # Enable persistence mode
+    nvidia-smi -pm 1 &> /dev/null && echo -e "${GREEN}✓${RESET} NVIDIA persistence mode enabled"
+    
+    # Set GPU to maximum performance mode
+    nvidia-smi -ac 10501,2520 &> /dev/null && echo -e "${GREEN}✓${RESET} GPU clocks set to maximum" || true
+    
+    # Disable GPU power limiting (use maximum TGP)
+    nvidia-smi -pl 450 &> /dev/null && echo -e "${GREEN}✓${RESET} GPU power limit set to 450W" || true
+    
+    # Set compute mode to exclusive process
+    nvidia-smi -c EXCLUSIVE_PROCESS &> /dev/null && echo -e "${GREEN}✓${RESET} Compute mode set to exclusive" || true
+fi
+
+# Set CPU performance governor for all cores
+if [ -f /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor ]; then
+    echo -e "\n${YELLOW}Setting CPU performance governor...${RESET}"
+    for cpu in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
+        echo "performance" > $cpu 2>/dev/null || true
+    done
+    echo -e "${GREEN}✓${RESET} All CPU cores set to performance governor"
+fi
+
+# Disable CPU frequency scaling
+if [ -f /sys/devices/system/cpu/intel_pstate/no_turbo ]; then
+    echo 0 > /sys/devices/system/cpu/intel_pstate/no_turbo
+    echo -e "${GREEN}✓${RESET} Intel Turbo Boost enabled"
+fi
+
+echo -e "\n${GREEN}IRQ affinity optimization complete!${RESET}"

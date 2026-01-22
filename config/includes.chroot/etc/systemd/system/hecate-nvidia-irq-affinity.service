@@ -1,0 +1,13 @@
+[Unit]
+Description=HecateOS NVIDIA IRQ Affinity Optimization
+After=nvidia-persistenced.service multi-user.target
+Requires=nvidia-persistenced.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/hecate-nvidia-irq-affinity
+RemainAfterExit=yes
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target
