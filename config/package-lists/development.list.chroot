@@ -1,7 +1,13 @@
 # HecateOS Development Stack Packages
 # Programming languages, tools, and frameworks
+#
+# NOTE: Ubuntu 24.04 repos have older versions of some tools.
+# For latest versions, see post-install documentation:
+# - Node.js 24 LTS: Use NodeSource PPA or nvm
+# - Go 1.25+: Use official go.dev installer
+# - Rust: Use rustup (installed but update with `rustup update`)
 
-# Python
+# Python (Ubuntu 24.04 has 3.12, latest is 3.14 - use pyenv for newer)
 python3
 python3-pip
 python3-dev
@@ -20,19 +26,17 @@ ipython3
 jupyter-notebook
 
 # Node.js and JavaScript
+# NOTE: Ubuntu repos have Node 18.x, LTS is now 24.x "Krypton"
+# For Node 24 LTS: curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
 nodejs
 npm
-yarn
 
-# Go
+# Go (Ubuntu has 1.22, latest is 1.25 - use go.dev for newer)
 golang-go
-golang-doc
 
-# Rust
+# Rust (use rustup for latest - currently 1.93.0)
 rustc
 cargo
-rustfmt
-rust-clippy
 
 # C/C++
 gcc
@@ -69,55 +73,44 @@ containerd
 runc
 
 # Kubernetes tools
+# NOTE: k9s not in Ubuntu repos - install via: snap install k9s
 kubectl
-kubeadm
-kubelet
-minikube
-k9s
 helm
 
 # Virtualization
-qemu
+qemu-system-x86
 qemu-kvm
-libvirt-daemon
+libvirt-daemon-system
 libvirt-clients
 bridge-utils
 virt-manager
-vagrant
 
 # Databases
+# NOTE: MongoDB not in Ubuntu repos - see mongodb.com for official repo
+# NOTE: For production MongoDB, add official MongoDB repo
 postgresql
 postgresql-contrib
 postgresql-client
-mysql-server
-mysql-client
 redis-server
 redis-tools
-mongodb-org
 sqlite3
 libsqlite3-dev
 
 # Development tools
+# NOTE: lazygit, delta, diff-so-fancy not in Ubuntu repos
+# Install via: cargo install git-delta, or snap/brew
 gh
-hub
-lazygit
 tig
-diff-so-fancy
-delta
 
 # Code quality
 shellcheck
-hadolint
 yamllint
-jsonlint
 
 # Build tools
-bazel-bootstrap
 ninja-build
 meson
 
 # Documentation
 pandoc
-asciidoc
 doxygen
 sphinx-common
