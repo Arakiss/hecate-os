@@ -30,6 +30,7 @@ HecateOS is an **adaptive** Linux distribution built on Ubuntu 24.04 LTS that au
 HecateOS **automatically detects and optimizes** for your hardware. No target needed:
 
 | Component | What HecateOS Does | Optimization Level |
+|-----------|-------------------|-------------------|
 | **Any Intel CPU** | Detects generation, applies P-State/C-State tuning | Auto-scaled |
 | **Any AMD CPU** | Detects Zen version, applies AMD-specific tuning | Auto-scaled |
 | **8GB → 512GB RAM** | Adjusts ZRAM, swappiness, dirty ratios dynamically | Progressive |
@@ -150,7 +151,7 @@ HecateOS is released under the MIT License. See [LICENSE](LICENSE) for details.
 
 ## 🔗 Resources
 
-- **Website**: [https://hecate-os.dev](https://hecate-os.dev) (coming soon)
+- **Website**: [https://hecateos.dev](https://hecateos.dev) (coming soon)
 - **Documentation**: [docs/](docs/)
 - **Discord**: [Join our community](https://discord.gg/hecate-os)
 - **Issues**: [GitHub Issues](https://github.com/Arakiss/hecate-os/issues)

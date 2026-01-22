@@ -382,7 +382,7 @@ class HecateWelcome:
             "  hecate-benchmark   - Run performance tests",
             "  hecate-update      - Update HecateOS",
             "",
-            "Documentation: https://hecate-os.dev/docs",
+            "Documentation: https://hecateos.dev/docs",
             "Community: https://discord.gg/hecate-os",
             "",
             "Enjoy HecateOS!"

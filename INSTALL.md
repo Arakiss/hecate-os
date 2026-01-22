@@ -210,7 +210,7 @@ To remove HecateOS (keeping Windows):
 
 ## Support
 
-- **Documentation**: https://hecate-os.dev/docs
+- **Documentation**: https://hecateos.dev/docs
 - **Discord**: https://discord.gg/hecate-os
 - **GitHub Issues**: https://github.com/hecate-os/hecate-os/issues
 
