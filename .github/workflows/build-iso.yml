@@ -57,7 +57,7 @@ jobs:
         key: ${{ runner.os }}-packages-${{ hashFiles('config/package-lists/*.list.chroot') }}
 
     - name: Build ISO
-      run: sudo ./build.sh
+      run: sudo ./build.sh build
 
     - name: Calculate checksums
       run: |
