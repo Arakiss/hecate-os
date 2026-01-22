@@ -16,15 +16,21 @@
 
 ## Honest Scope for v1.0
 
-**Primary Target**: Intel 13th gen + NVIDIA RTX 4090 (what I actually have)
+**No Target Hardware** - HecateOS adapts to what you have.
 
-The initial release is specifically optimized for:
-- Intel Core i9-13900K (tested)
-- ASUS Z690/Z790 motherboards (tested)
-- NVIDIA RTX 4090/4080 (tested)
-- 128GB DDR5 RAM configurations (tested)
+**What's Actually Tested**:
+- Intel Core i9-13900K (my machine)
+- NVIDIA RTX 4090 (my machine)
+- 128GB DDR5-6400 (my machine)
 
-Everything else is "best effort" based on documentation and theory.
+**What Should Work** (based on detection logic):
+- Any Intel 10th gen+ (uses intel_pstate)
+- Any AMD Ryzen (uses amd-pstate) 
+- Any NVIDIA GPU (driver selection matrix)
+- Any amount of RAM (ZRAM scales)
+- Any storage (I/O scheduler adapts)
+
+The beauty is the **hardware detection automatically adjusts** optimizations. Someone with an i5-12400 + RTX 3060 + 16GB RAM gets different tuning than my i9-13900K + RTX 4090 + 128GB, but both get optimized for their specific hardware.
 
 ## Package Philosophy
 

@@ -13,7 +13,7 @@
 
 ## 🔥 What is HecateOS?
 
-HecateOS is a highly optimized Linux distribution built on Ubuntu 24.04 LTS, designed specifically for high-end workstations and AI/ML development. Named after Hecate, the Greek goddess of crossroads and magic, it represents the perfect intersection between Windows and Linux in dual-boot setups while unleashing the full potential of modern hardware.
+HecateOS is an **adaptive** Linux distribution built on Ubuntu 24.04 LTS that automatically detects and optimizes for YOUR specific hardware, whatever it is.
 
 ### ✨ Key Features
 
@@ -25,26 +25,26 @@ HecateOS is a highly optimized Linux distribution built on Ubuntu 24.04 LTS, des
 - **⚙️ Hardware Optimized**: Specific tuning for NVMe Gen5, DDR5-6400, and PCIe 5.0
 - **🛡️ No Compromises**: Mitigations disabled, performance governor, all limiters removed
 
-## 🎯 Target Hardware
+## 🎯 Adaptive Hardware Support
 
-HecateOS is optimized for, but not limited to:
+HecateOS **automatically detects and optimizes** for your hardware. No target needed:
 
-| Component | Recommended | Minimum |
-|-----------|-------------|---------|
-| CPU | Intel i9-13900K+ | Intel i7-12700K+ |
-| RAM | 128GB DDR5-6400 | 32GB DDR5-4800 |
-| GPU | NVIDIA RTX 4090 | NVIDIA RTX 3070 or better |
-| Storage | NVMe PCIe 5.0 | NVMe PCIe 4.0 |
-| Motherboard | Z790/Z690 chipset | Intel 600+ series |
+| Component | What HecateOS Does | Optimization Level |
+| **Any Intel CPU** | Detects generation, applies P-State/C-State tuning | Auto-scaled |
+| **Any AMD CPU** | Detects Zen version, applies AMD-specific tuning | Auto-scaled |
+| **8GB → 512GB RAM** | Adjusts ZRAM, swappiness, dirty ratios dynamically | Progressive |
+| **Any NVIDIA GPU** | Selects optimal driver (550/535/525/470) | Tier-based |
+| **Any AMD GPU** | Chooses AMDGPU or PRO driver automatically | Model-based |
+| **Any Storage** | Detects NVMe gen, SATA SSD, or HDD and tunes I/O | Type-aware |
 
 ## 🔮 Philosophy
 
-Unlike generic Linux distributions that try to work "okay" on everything, HecateOS follows the principle of **"Excellence through Specialization"**:
+Unlike generic Linux distributions that use one-size-fits-all configs, HecateOS follows the principle of **"Adaptive Excellence"**:
 
-1. **Performance First**: Every default is tuned for speed, not compatibility
-2. **Opinionated Defaults**: We made the hard choices so you don't have to
-3. **Power User Focus**: Built for those who know what they're doing
-4. **No Bloat**: Only what's essential for high-performance computing
+1. **Hardware-Aware**: Detects your exact CPU, GPU, RAM, and storage
+2. **Auto-Optimization**: Applies specific tuning for YOUR hardware
+3. **No Manual Tuning**: The system figures out the best settings
+4. **Progressive Scaling**: More RAM? Better GPU? It adapts accordingly
 
 ## 🚀 Quick Start
 
@@ -165,3 +165,13 @@ HecateOS is released under the MIT License. See [LICENSE](LICENSE) for details.
   <p><b>HecateOS</b> - Unleash the beast within your machine</p>
   <p>Made with 🖤 by the HecateOS Team</p>
 </div>
+
+---
+
+<details>
+<summary><b>Why "HecateOS"?</b></summary>
+
+Named after my cat Hecate, who likes to sit at the crossroads between my keyboard and monitor while I code. 
+
+Coincidentally, Hecate is also the Greek goddess of crossroads and thresholds, which fits perfectly for a distro that lives between Windows and Linux in dual-boot setups. But honestly? It's just my cat's name. 🐱
+</details>
