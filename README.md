@@ -38,7 +38,7 @@ HecateOS **automatically detects and optimizes** for your hardware. No target ne
 | **Any Intel CPU** | Detects generation, applies P-State/C-State tuning | Auto-scaled |
 | **Any AMD CPU** | Detects Zen version, applies AMD-specific tuning | Auto-scaled |
 | **8GB → 512GB RAM** | Adjusts ZRAM, swappiness, dirty ratios dynamically | Progressive |
-| **Any NVIDIA GPU** | Selects optimal driver (550/535/525/470) | Tier-based |
+| **Any NVIDIA GPU** | Selects optimal driver (570/535/525/470) | Tier-based |
 | **Any AMD GPU** | Chooses AMDGPU or PRO driver automatically | Model-based |
 | **Any Storage** | Detects NVMe gen, SATA SSD, or HDD and tunes I/O | Type-aware |
 
@@ -82,11 +82,11 @@ sudo dd if=hecate-os-24.04-amd64.iso of=/dev/sdX bs=4M status=progress
 - Spectre/Meltdown mitigations disabled (10-15% performance gain)
 
 ### Development Stack
-- **Languages**: Python 3.12, Node.js 20 LTS, Rust, Go
+- **Languages**: Python 3.12 (3.14 via pyenv), Node.js 18 (24 LTS via nvm), Rust, Go
 - **Containers**: Docker CE with NVIDIA Container Toolkit
-- **AI/ML**: CUDA 12.6, cuDNN, TensorRT, PyTorch, TensorFlow
-- **Databases**: PostgreSQL 16, Redis, MongoDB
-- **Tools**: Neovim, VS Code (optional), tmux, zsh with oh-my-zsh
+- **AI/ML**: CUDA, cuDNN (install PyTorch/TensorFlow via pip for GPU support)
+- **Databases**: PostgreSQL, Redis, SQLite
+- **Tools**: Neovim, gh (GitHub CLI), tmux, zsh
 
 ### Performance Tools
 - btop (better htop)
@@ -155,14 +155,10 @@ HecateOS is released under the MIT License. See [LICENSE](LICENSE) for details.
 
 ## 🔗 Resources
 
-- **Website**: [https://hecateos.dev](https://hecateos.dev) (coming soon)
 - **Documentation**: [docs/](docs/)
-- **Discord**: [Join our community](https://discord.gg/hecate-os)
+- **Roadmap**: [docs/ROADMAP.md](docs/ROADMAP.md)
 - **Issues**: [GitHub Issues](https://github.com/Arakiss/hecate-os/issues)
-
-## 🌟 Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=Arakiss/hecate-os&type=Date)](https://star-history.com/#Arakiss/hecate-os&Date)
+- **Security**: [SECURITY.md](SECURITY.md)
 
 ---
 
