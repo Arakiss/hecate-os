@@ -1,32 +1,30 @@
 ---
 name: Bug Report
-about: Create a report to help us improve
+about: Report a bug or issue with HecateOS
 title: '[BUG] '
 labels: bug
 assignees: ''
 ---
 
-## Describe the Bug
-A clear and concise description of what the bug is.
+## Description
+A clear and concise description of the bug.
 
-## System Information
-Run `hecate-info --all` and paste output here:
+## Hardware Information
+**Please run `hecate-info` and paste the output here:**
 ```
-(paste here)
-```
-
-## Hardware Profile
-Run `cat /etc/hecate/hardware-profile.json` and paste:
-```json
-(paste here)
+<paste output here>
 ```
 
-## To Reproduce
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '...'
-3. Scroll down to '...'
-4. See error
+Or manually provide:
+- **CPU**: (e.g., Intel i9-13900K, AMD Ryzen 9 7950X)
+- **GPU**: (e.g., NVIDIA RTX 4090, AMD RX 7900 XTX)
+- **RAM**: (e.g., 64GB DDR5)
+- **Storage**: (e.g., NVMe Gen4, SATA SSD)
+
+## Steps to Reproduce
+1. 
+2. 
+3. 
 
 ## Expected Behavior
 What you expected to happen.
@@ -34,16 +32,20 @@ What you expected to happen.
 ## Actual Behavior
 What actually happened.
 
-## Screenshots
-If applicable, add screenshots.
-
 ## Logs
-Relevant logs from:
-- `journalctl -b | tail -100`
+**Relevant log output (if applicable):**
+```
+<paste logs here>
+```
+
+Check these locations:
+- `/var/log/syslog`
+- `journalctl -xe`
 - `dmesg | tail -50`
-- `/var/log/hecate/`
+
+## HecateOS Version
+- **Version**: (run `cat /etc/os-release | grep VERSION_ID`)
+- **Edition**: (Ultimate/Workstation/Gaming/Developer/Lite/Server)
 
 ## Additional Context
-- HecateOS Edition: [Ultimate/Workstation/Gaming/Developer/Lite/Server]
-- Installation type: [Fresh/Upgrade/Dual-boot]
-- Did this work before? [Yes/No/First time]
+Any other relevant information.

@@ -1,45 +1,31 @@
 ## Description
-Brief description of what this PR does.
+Brief description of the changes.
 
 ## Type of Change
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] Hardware support (adds support for new hardware)
-- [ ] Performance improvement
+- [ ] Bug fix (non-breaking change fixing an issue)
+- [ ] New feature (non-breaking change adding functionality)
+- [ ] Breaking change (fix or feature causing existing functionality to change)
 - [ ] Documentation update
+- [ ] Package list update
+- [ ] Build system change
 
 ## Testing
-- [ ] I have tested this on my machine
-- [ ] I have tested this in a VM
-- [ ] I have run the benchmarks
-- [ ] Tests pass locally
+- [ ] I have tested this on my hardware
+- [ ] I have tested the ISO build process
+- [ ] I have tested the installation process
 
-## Hardware Tested On
-- CPU: 
-- GPU: 
-- RAM: 
-- Storage: 
+### Hardware Tested (if applicable)
+- **CPU**: 
+- **GPU**: 
+- **RAM**: 
+- **Edition**: 
 
 ## Checklist
-- [ ] My code follows the style guidelines of this project
-- [ ] I have performed a self-review of my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation
-- [ ] My changes generate no new warnings
-- [ ] I have tested that my fix is effective or that my feature works
-- [ ] New and existing tests pass locally with my changes
-
-## Performance Impact
-- [ ] This change improves performance
-- [ ] This change has no performance impact
-- [ ] This change may reduce performance (explain why it's worth it)
-
-## Screenshots (if applicable)
-Add screenshots to help explain your changes.
+- [ ] My code follows the project's style guidelines
+- [ ] I have commented my code where necessary
+- [ ] I have updated the documentation (if needed)
+- [ ] I have added an entry to CHANGELOG.md (if needed)
+- [ ] My changes don't break the build
 
 ## Related Issues
-Closes #(issue number)
-
-## Additional Notes
-Any additional information that reviewers should know.
+Fixes #(issue number)
