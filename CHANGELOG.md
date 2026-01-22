@@ -2,54 +2,42 @@
 
 All notable changes to HecateOS will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
 ### Added
-- Initial release of HecateOS
-- Adaptive hardware detection system
-- Automatic optimization based on detected hardware
-- Support for Intel 10th-13th gen CPUs
-- Support for NVIDIA RTX 20/30/40 series GPUs
-- Intelligent driver selection system
-- ZRAM configuration with dynamic sizing
-- Multiple ISO editions (Ultimate, Workstation, Gaming, Developer, Lite, Server)
-- Welcome wizard for first boot
-- Performance benchmarking suite
-- Post-installation setup script
-- GitHub Actions CI/CD pipeline
-- Web installer (curl hecate.sh | bash)
+- Initial project structure with live-build configuration
+- Hardware detection system (`hardware-detector.sh`)
+- Automatic optimization application (`apply-optimizations.sh`)
+- NVIDIA driver installer with GPU tier detection
+- Benchmark suite for performance testing
+- 6 edition build system (Ultimate, Workstation, Gaming, Developer, Lite, Server)
+- Comprehensive package lists for development, AI/ML, and performance tools
+- GRUB theme customization
+- Docker daemon pre-configuration
+- Systemd services for NVIDIA persistence and IRQ affinity
 
-### Security
-- CPU mitigations disabled by default for performance (can be re-enabled)
-- Security policy and hardening guide included
+### Changed
+- GitHub Actions updated to v4 (cache, upload-artifact, download-artifact)
 
-### Known Issues
-- AMD CPU support is theoretical (needs testing)
-- AMD GPU support is basic (needs testing)
-- Laptop battery optimizations not implemented
-- Secure Boot not supported with NVIDIA drivers
+### Fixed
+- CI pipeline now works (deprecated actions v3 → v4)
 
-## [1.0.0] - TBD
+## [0.1.0] - Unreleased
 
-### Initial Release
-- First public release
-- Based on Ubuntu 24.04 LTS
-- Optimized for high-end workstations
-- Focus on Intel + NVIDIA hardware
+First alpha release. Hardware detection and optimization framework complete.
 
----
+### Tested Hardware
+- Intel Core i9-13900K
+- NVIDIA RTX 4090
+- 128GB DDR5-6400
 
-## Release Types
+### Known Limitations
+- AMD support is theoretical (untested)
+- Laptop optimizations not implemented
+- Only Ultimate edition thoroughly tested
 
-- **Major (X.0.0)**: Breaking changes, major features
-- **Minor (0.X.0)**: New features, hardware support
-- **Patch (0.0.X)**: Bug fixes, performance improvements
-
-## Versioning Strategy
-
-- **1.x**: Ubuntu 24.04 base
-- **2.x**: Future Ubuntu 26.04 base (planned)
-- **Point releases**: Monthly security and bug fixes
+[Unreleased]: https://github.com/Arakiss/hecate-os/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/Arakiss/hecate-os/releases/tag/v0.1.0
