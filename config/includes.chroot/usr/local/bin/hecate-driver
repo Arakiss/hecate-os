@@ -1,0 +1,143 @@
+#!/bin/bash
+#
+# HecateOS Driver Management
+# Manage GPU drivers (NVIDIA, AMD)
+#
+# Usage:
+#   hecate-driver [status|install|remove]
+#
+
+set -e
+
+# Colors
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+RESET='\033[0m'
+
+show_status() {
+    echo -e "${CYAN}GPU Driver Status${RESET}"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+
+    # NVIDIA
+    if lspci 2>/dev/null | grep -qi nvidia; then
+        echo -e "${GREEN}NVIDIA GPU Detected${RESET}"
+        if command -v nvidia-smi &>/dev/null; then
+            DRIVER=$(nvidia-smi --query-gpu=driver_version --format=csv,noheader 2>/dev/null | head -1)
+            GPU=$(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | head -1)
+            echo "  GPU:     $GPU"
+            echo "  Driver:  $DRIVER"
+
+            # Check CUDA
+            if command -v nvcc &>/dev/null; then
+                CUDA=$(nvcc --version 2>/dev/null | grep release | awk '{print $5}' | tr -d ',')
+                echo "  CUDA:    $CUDA"
+            fi
+        else
+            echo -e "  ${YELLOW}Driver not installed${RESET}"
+            echo "  Run: sudo hecate driver install"
+        fi
+    fi
+
+    # AMD
+    if lspci 2>/dev/null | grep -qi 'amd.*vga\|radeon'; then
+        echo ""
+        echo -e "${GREEN}AMD GPU Detected${RESET}"
+        if [ -d /sys/class/drm/card0/device ]; then
+            echo "  Using kernel driver (amdgpu)"
+        fi
+    fi
+
+    # Intel
+    if lspci 2>/dev/null | grep -qi 'intel.*graphics'; then
+        echo ""
+        echo -e "${GREEN}Intel GPU Detected${RESET}"
+        echo "  Using kernel driver (i915)"
+    fi
+
+    echo ""
+}
+
+install_driver() {
+    echo -e "${CYAN}Installing GPU Driver${RESET}"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+    if [ "$EUID" -ne 0 ]; then
+        echo -e "${RED}Error: Must be run as root${RESET}"
+        exit 1
+    fi
+
+    if lspci | grep -qi nvidia; then
+        echo "Installing NVIDIA driver..."
+
+        # Use the driver installer if available
+        if [ -x /usr/share/hecate/scripts/hecate-driver-installer.sh ]; then
+            /usr/share/hecate/scripts/hecate-driver-installer.sh
+        else
+            # Fallback to ubuntu-drivers
+            if command -v ubuntu-drivers &>/dev/null; then
+                ubuntu-drivers install nvidia
+            else
+                apt-get install -y nvidia-driver-570
+            fi
+        fi
+
+        echo -e "${GREEN}✓ Driver installed${RESET}"
+        echo -e "${YELLOW}Reboot required to activate driver${RESET}"
+    else
+        echo "No supported GPU detected for driver installation"
+    fi
+}
+
+remove_driver() {
+    echo -e "${CYAN}Removing GPU Driver${RESET}"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+    if [ "$EUID" -ne 0 ]; then
+        echo -e "${RED}Error: Must be run as root${RESET}"
+        exit 1
+    fi
+
+    echo -e "${YELLOW}This will remove NVIDIA drivers${RESET}"
+    read -p "Continue? (y/N): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "Cancelled."
+        exit 0
+    fi
+
+    apt-get purge -y 'nvidia-*' 'libnvidia-*' 2>/dev/null || true
+    apt-get autoremove -y
+
+    echo -e "${GREEN}✓ Driver removed${RESET}"
+    echo -e "${YELLOW}Reboot required${RESET}"
+}
+
+# Main
+case "${1:-status}" in
+    status)
+        show_status
+        ;;
+    install)
+        install_driver
+        ;;
+    remove|uninstall)
+        remove_driver
+        ;;
+    --help|-h)
+        echo "Usage: hecate-driver [command]"
+        echo ""
+        echo "Commands:"
+        echo "  status    Show driver status (default)"
+        echo "  install   Install GPU driver"
+        echo "  remove    Remove GPU driver"
+        ;;
+    *)
+        echo -e "${RED}Unknown command: $1${RESET}"
+        echo "Run 'hecate-driver --help' for usage"
+        exit 1
+        ;;
+esac

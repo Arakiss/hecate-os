@@ -1,0 +1,28 @@
+# Build artifacts
+iso/
+*.iso
+*.img
+*.log
+chroot/
+binary/
+cache/
+.build/
+
+# Git
+.git/
+.github/
+
+# Documentation
+*.md
+!README.md
+
+# Development files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db

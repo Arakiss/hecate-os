@@ -81,13 +81,27 @@ HecateOS automatically detects and optimizes for:
 
 ## Post-Installation
 
+### HecateOS CLI
+
+The `hecate` command provides system management:
+
+```bash
+hecate info          # Show system info and applied optimizations
+hecate info --all    # Detailed hardware and optimization info
+hecate update        # Update system packages and run migrations
+hecate optimize      # Re-detect hardware and apply optimizations
+hecate driver        # Show GPU driver status
+hecate driver install  # Install GPU drivers
+hecate benchmark     # Run performance benchmark
+```
+
 ### Verify Installation
 ```bash
 # Check system info
-hecate-info --all
+hecate info --all
 
 # Run benchmarks
-sudo hecate-benchmark
+sudo hecate benchmark
 
 # Test GPU
 nvidia-smi  # For NVIDIA
@@ -130,14 +144,14 @@ sudo hecate-driver-installer
 
 ### Performance Issues
 ```bash
-# Re-detect hardware
-sudo /usr/local/bin/hecate-hardware-detect
-
-# Reapply optimizations
-sudo /usr/local/bin/hecate-apply-optimizations
+# Re-detect hardware and reapply optimizations
+sudo hecate optimize
 
 # Check current profile
 cat /etc/hecate/hardware-profile.json
+
+# View applied optimizations
+hecate info --all
 ```
 
 ### Boot Issues

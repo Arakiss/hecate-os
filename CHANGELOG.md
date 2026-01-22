@@ -18,12 +18,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GRUB theme customization
 - Docker daemon pre-configuration
 - Systemd services for NVIDIA persistence and IRQ affinity
+- **CLI tools** (`bin/hecate*`)
+  - `hecate` - Main command dispatcher
+  - `hecate info` - System information display
+  - `hecate update` - System updates with migration support
+  - `hecate optimize` - Re-detect and apply optimizations
+  - `hecate driver` - GPU driver management
+  - `hecate migrate` - Run pending migrations
+- **Migration system** (`migrations/`)
+  - Timestamped migration scripts
+  - Automatic tracking of applied migrations
+  - Runs during `hecate update`
+- **Docker build environment**
+  - `Dockerfile.build` for reproducible builds
+  - `docker-compose.yml` for local development
+- **Release scripts**
+  - ISO upload to Cloudflare R2/S3 (`hecate-iso-upload.sh`)
+  - GPG signing (`hecate-iso-sign.sh`)
+  - Full release workflow (`hecate-release.sh`)
 
 ### Changed
 - GitHub Actions updated to v4 (cache, upload-artifact, download-artifact)
+- CI workflow now supports Docker-based builds
+- ShellCheck now scans entire repository
 
 ### Fixed
 - CI pipeline now works (deprecated actions v3 → v4)
+- Build now works on Ubuntu 24.04 (removed unsupported live-build options)
 
 ## [0.1.0] - Unreleased
 

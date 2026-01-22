@@ -1,0 +1,65 @@
+#!/bin/bash
+#
+# HecateOS Optimize Command
+# Re-detects hardware and applies optimizations
+#
+# Usage:
+#   hecate-optimize [--force]
+#
+
+set -e
+
+# Colors
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+RESET='\033[0m'
+
+FORCE=false
+if [[ "$1" == "--force" ]] || [[ "$1" == "-f" ]]; then
+    FORCE=true
+fi
+
+echo -e "${PURPLE}╦ ╦┌─┐┌─┐┌─┐┌┬┐┌─┐╔═╗╔═╗${RESET}"
+echo -e "${PURPLE}╠═╣├┤ │  ├─┤ │ ├┤ ║ ║╚═╗${RESET}"
+echo -e "${PURPLE}╩ ╩└─┘└─┘┴ ┴ ┴ └─┘╚═╝╚═╝${RESET}"
+echo ""
+echo -e "${CYAN}Hardware Optimization${RESET}"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+# Check if running as root
+if [ "$EUID" -ne 0 ]; then
+    echo -e "${RED}Error: This command must be run as root${RESET}"
+    echo "Usage: sudo hecate optimize"
+    exit 1
+fi
+
+# Step 1: Hardware detection
+echo -e "${CYAN}[1/2] Detecting hardware...${RESET}"
+if [ -x /usr/local/bin/hecate-hardware-detect ]; then
+    /usr/local/bin/hecate-hardware-detect
+elif [ -x /usr/share/hecate/scripts/hardware-detector.sh ]; then
+    /usr/share/hecate/scripts/hardware-detector.sh
+else
+    echo -e "${YELLOW}Warning: Hardware detection script not found${RESET}"
+fi
+
+# Step 2: Apply optimizations
+echo ""
+echo -e "${CYAN}[2/2] Applying optimizations...${RESET}"
+if [ -x /usr/local/bin/hecate-apply-optimizations ]; then
+    /usr/local/bin/hecate-apply-optimizations
+elif [ -x /usr/share/hecate/scripts/apply-optimizations.sh ]; then
+    /usr/share/hecate/scripts/apply-optimizations.sh
+else
+    echo -e "${YELLOW}Warning: Optimization script not found${RESET}"
+fi
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo -e "${GREEN}✓ Optimization complete!${RESET}"
+echo ""
+echo "Run 'hecate info --all' to see applied optimizations"

@@ -1,0 +1,63 @@
+#
+# HecateOS ISO Build Environment
+# Reproducible ISO builds using Docker
+#
+# Usage:
+#   docker build -f Dockerfile.build -t hecate-builder .
+#   docker run --rm --privileged -v $(pwd):/build -v $(pwd)/iso:/build/iso hecate-builder
+#
+
+FROM ubuntu:24.04
+
+LABEL maintainer="HecateOS Team"
+LABEL description="HecateOS ISO Build Environment"
+LABEL version="1.0"
+
+# Avoid interactive prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=UTC
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y \
+    # Core build tools
+    live-build \
+    debootstrap \
+    squashfs-tools \
+    xorriso \
+    isolinux \
+    syslinux-utils \
+    # Bootloader support
+    grub-pc-bin \
+    grub-efi-amd64-bin \
+    grub-efi-amd64-signed \
+    shim-signed \
+    # Filesystem tools
+    dosfstools \
+    mtools \
+    parted \
+    gdisk \
+    # Compression
+    gzip \
+    bzip2 \
+    xz-utils \
+    zstd \
+    # Utilities
+    wget \
+    curl \
+    git \
+    rsync \
+    gnupg \
+    ca-certificates \
+    # Clean up
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Create build directory
+WORKDIR /build
+
+# Set up entry point
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+CMD ["build"]

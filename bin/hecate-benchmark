@@ -1,0 +1,6 @@
+#!/bin/bash
+#
+# HecateOS Benchmark Command
+# Wrapper for the benchmark suite
+#
+exec /usr/share/hecate/scripts/hecate-benchmark.sh "$@"

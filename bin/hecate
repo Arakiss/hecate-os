@@ -1,0 +1,100 @@
+#!/bin/bash
+#
+# HecateOS Main Command
+# Dispatcher for all hecate-* subcommands
+#
+# Usage:
+#   hecate <command> [options]
+#
+# Commands:
+#   info        Show system information
+#   update      Update system and apply migrations
+#   optimize    Re-apply hardware optimizations
+#   benchmark   Run performance benchmarks
+#   driver      Manage GPU drivers
+#   migrate     Run pending migrations
+#   version     Show version information
+#
+
+set -e
+
+HECATE_VERSION=$(cat /etc/hecate/version 2>/dev/null || echo "0.1.0")
+HECATE_BIN_DIR="/usr/local/bin"
+
+# Colors
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+RESET='\033[0m'
+
+show_logo() {
+    echo -e "${PURPLE}╦ ╦┌─┐┌─┐┌─┐┌┬┐┌─┐╔═╗╔═╗${RESET}"
+    echo -e "${PURPLE}╠═╣├┤ │  ├─┤ │ ├┤ ║ ║╚═╗${RESET}"
+    echo -e "${PURPLE}╩ ╩└─┘└─┘┴ ┴ ┴ └─┘╚═╝╚═╝${RESET}"
+    echo ""
+}
+
+show_help() {
+    show_logo
+    echo -e "${CYAN}HecateOS v${HECATE_VERSION}${RESET}"
+    echo "Adaptive Linux for high-performance workstations"
+    echo ""
+    echo "Usage: hecate <command> [options]"
+    echo ""
+    echo "Commands:"
+    echo -e "  ${GREEN}info${RESET}        Show system information and hardware profile"
+    echo -e "  ${GREEN}update${RESET}      Update system packages and apply migrations"
+    echo -e "  ${GREEN}optimize${RESET}    Re-detect hardware and apply optimizations"
+    echo -e "  ${GREEN}benchmark${RESET}   Run performance benchmarks"
+    echo -e "  ${GREEN}driver${RESET}      Manage GPU drivers"
+    echo -e "  ${GREEN}migrate${RESET}     Run pending system migrations"
+    echo -e "  ${GREEN}version${RESET}     Show version information"
+    echo ""
+    echo "Examples:"
+    echo "  hecate info --all     # Show detailed system information"
+    echo "  hecate update         # Update system"
+    echo "  hecate benchmark      # Run benchmarks"
+    echo ""
+    echo "Documentation: https://github.com/Arakiss/hecate-os"
+}
+
+# Dispatch to subcommand
+case "${1:-}" in
+    info)
+        shift
+        exec "$HECATE_BIN_DIR/hecate-info" "$@"
+        ;;
+    update)
+        shift
+        exec "$HECATE_BIN_DIR/hecate-update" "$@"
+        ;;
+    optimize)
+        shift
+        exec "$HECATE_BIN_DIR/hecate-optimize" "$@"
+        ;;
+    benchmark)
+        shift
+        exec "$HECATE_BIN_DIR/hecate-benchmark" "$@"
+        ;;
+    driver)
+        shift
+        exec "$HECATE_BIN_DIR/hecate-driver" "$@"
+        ;;
+    migrate)
+        shift
+        exec "$HECATE_BIN_DIR/hecate-migrate" "$@"
+        ;;
+    version|-v|--version)
+        echo "HecateOS v${HECATE_VERSION}"
+        ;;
+    help|-h|--help|"")
+        show_help
+        ;;
+    *)
+        echo -e "${RED}Error: Unknown command '$1'${RESET}"
+        echo "Run 'hecate help' for usage information"
+        exit 1
+        ;;
+esac

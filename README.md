@@ -59,31 +59,71 @@ Should work on (detection logic exists but untested):
 
 ```
 hecate-os/
+├── bin/                        # CLI tools (hecate-*)
+│   ├── hecate                  # Main dispatcher
+│   ├── hecate-info             # System info and status
+│   ├── hecate-update           # Update system + migrations
+│   ├── hecate-optimize         # Re-apply optimizations
+│   ├── hecate-driver           # GPU driver management
+│   └── hecate-migrate          # Run pending migrations
 ├── scripts/
 │   ├── hardware-detector.sh    # Detects and profiles hardware
 │   ├── apply-optimizations.sh  # Applies profile-specific tuning
 │   ├── hecate-driver-installer.sh  # GPU driver selection
 │   └── hecate-benchmark.sh     # Performance testing
+├── migrations/                 # Timestamped migration scripts
 ├── config/
 │   ├── package-lists/          # Packages to install
 │   ├── includes.chroot/        # System configs (sysctl, GRUB, docker)
 │   └── hooks/                  # Build-time scripts
+├── Dockerfile.build            # Docker build environment
 └── build.sh                    # Main build script
+```
+
+## CLI Commands
+
+After installation, HecateOS provides the `hecate` command:
+
+```bash
+hecate info          # Show system info and applied optimizations
+hecate update        # Update system packages and run migrations
+hecate optimize      # Re-detect hardware and apply optimizations
+hecate driver        # Manage GPU drivers (status/install/remove)
+hecate migrate       # Run pending migrations
+hecate benchmark     # Run performance benchmark
 ```
 
 ## Building
 
+### Option 1: Docker (Recommended)
+
 ```bash
-# Install dependencies (Ubuntu 22.04+)
-sudo apt install live-build debootstrap squashfs-tools xorriso
+git clone https://github.com/Arakiss/hecate-os.git
+cd hecate-os
+
+# Build the Docker image and ISO
+docker compose run --rm build
+
+# Or manually:
+docker build -f Dockerfile.build -t hecate-builder .
+docker run --rm --privileged -v $(pwd):/build hecate-builder
+```
+
+### Option 2: Native Build
+
+Requires Ubuntu 24.04:
+
+```bash
+# Install dependencies
+sudo apt install live-build debootstrap squashfs-tools xorriso isolinux
 
 # Clone and build
 git clone https://github.com/Arakiss/hecate-os.git
 cd hecate-os
-sudo ./build.sh
+sudo ./build.sh build
 ```
 
-ISO output: `iso/hecate-os-0.1.0-amd64.iso`
+ISO output: `iso/hecate-os-0.1.0-amd64-YYYYMMDD.iso`
 
 ## Performance Claims
 

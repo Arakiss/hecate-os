@@ -1,0 +1,40 @@
+#
+# HecateOS Docker Compose Configuration
+# Simplifies local ISO building
+#
+# Usage:
+#   docker compose build          # Build the builder image
+#   docker compose run --rm build # Build the ISO
+#   docker compose run --rm clean # Clean build artifacts
+#
+
+services:
+  builder:
+    build:
+      context: .
+      dockerfile: Dockerfile.build
+    image: hecate-builder:latest
+    privileged: true
+    volumes:
+      - .:/build
+      - ./iso:/build/iso
+    working_dir: /build
+
+  # Convenience targets
+  build:
+    extends: builder
+    command: build
+
+  rebuild:
+    extends: builder
+    command: rebuild
+
+  clean:
+    extends: builder
+    command: clean
+
+  shell:
+    extends: builder
+    command: shell
+    stdin_open: true
+    tty: true

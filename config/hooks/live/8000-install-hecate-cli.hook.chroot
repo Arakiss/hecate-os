@@ -1,0 +1,34 @@
+#!/bin/bash
+# HecateOS Live-Build Hook: Install CLI Tools
+# Copies hecate-* commands and scripts to the live system
+set -e
+
+echo "HecateOS: Installing CLI tools..."
+
+# Create directories
+mkdir -p /usr/local/bin
+mkdir -p /usr/share/hecate/scripts
+mkdir -p /usr/share/hecate/migrations
+mkdir -p /etc/hecate
+
+# Copy CLI tools (these will be in the build directory during live-build)
+# The bin/ directory contents get copied by a separate mechanism
+
+# Note: During live-build, the repository files are available
+# This hook ensures the directories exist and sets permissions
+
+# Set permissions on any existing CLI tools
+chmod +x /usr/local/bin/hecate* 2>/dev/null || true
+
+# Create HecateOS version file
+echo "0.1.0" > /etc/hecate/version
+
+# Create initial hardware profile placeholder
+if [ ! -f /etc/hecate/hardware-profile.json ]; then
+    echo '{"system":{"profile":"pending","version":"0.1.0"}}' > /etc/hecate/hardware-profile.json
+fi
+
+# Create migrations tracking file
+touch /etc/hecate/migrations.applied
+
+echo "HecateOS: CLI tools installation complete"

@@ -16,8 +16,8 @@ ff02::1         ip6-allnodes
 ff02::2         ip6-allrouters
 EOF
 
-# Create symlink for hecate-info command
-ln -sf /usr/local/share/hecate/hecate-info /usr/local/bin/hecate-info || true
+# hecate command is now directly in /usr/local/bin
+# No symlink needed
 
 # Set default shell to bash (can be changed by user)
 chsh -s /bin/bash root || true

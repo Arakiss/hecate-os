@@ -1,0 +1,86 @@
+#!/bin/bash
+#
+# HecateOS Update Command
+# Updates system packages and applies migrations
+#
+# Usage:
+#   hecate-update [-y]
+#
+
+set -e
+
+# Colors
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+RESET='\033[0m'
+
+AUTO_YES=false
+if [[ "$1" == "-y" ]]; then
+    AUTO_YES=true
+fi
+
+echo -e "${PURPLE}╦ ╦┌─┐┌─┐┌─┐┌┬┐┌─┐╔═╗╔═╗${RESET}"
+echo -e "${PURPLE}╠═╣├┤ │  ├─┤ │ ├┤ ║ ║╚═╗${RESET}"
+echo -e "${PURPLE}╩ ╩└─┘└─┘┴ ┴ ┴ └─┘╚═╝╚═╝${RESET}"
+echo ""
+echo -e "${CYAN}System Update${RESET}"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+# Check if running as root
+if [ "$EUID" -ne 0 ]; then
+    echo -e "${RED}Error: This command must be run as root${RESET}"
+    echo "Usage: sudo hecate update"
+    exit 1
+fi
+
+# Confirmation
+if [ "$AUTO_YES" = false ]; then
+    echo "This will:"
+    echo "  1. Update system packages (apt)"
+    echo "  2. Apply pending HecateOS migrations"
+    echo "  3. Clean up old packages"
+    echo ""
+    read -p "Continue? (y/N): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "Cancelled."
+        exit 0
+    fi
+fi
+
+# Step 1: Update package lists
+echo ""
+echo -e "${CYAN}[1/4] Updating package lists...${RESET}"
+apt-get update -qq
+
+# Step 2: Upgrade packages
+echo -e "${CYAN}[2/4] Upgrading packages...${RESET}"
+apt-get upgrade -y
+
+# Step 3: Run migrations
+echo -e "${CYAN}[3/4] Checking for migrations...${RESET}"
+if [ -x /usr/local/bin/hecate-migrate ]; then
+    /usr/local/bin/hecate-migrate
+else
+    echo "  No migration system installed"
+fi
+
+# Step 4: Cleanup
+echo -e "${CYAN}[4/4] Cleaning up...${RESET}"
+apt-get autoremove -y -qq
+apt-get autoclean -qq
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo -e "${GREEN}✓ Update complete!${RESET}"
+echo ""
+
+# Check if reboot required
+if [ -f /var/run/reboot-required ]; then
+    echo -e "${YELLOW}⚠ A reboot is required to complete the update${RESET}"
+    echo "  Run: sudo reboot"
+fi
