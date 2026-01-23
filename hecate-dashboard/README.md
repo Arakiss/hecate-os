@@ -48,6 +48,18 @@ Edit `.env.local` to configure:
 bun run dev
 
 # Dashboard will be available at http://localhost:3000
+
+# Run linting
+bun run lint
+
+# Fix linting issues
+bun run lint:fix
+
+# Format code
+bun run format
+
+# Run CI checks (for pre-commit)
+bun run check
 ```
 
 ## Production Build
@@ -67,6 +79,7 @@ Built with:
 - **Shadcn UI** - Component library (base components, not Radix)
 - **Tailwind CSS** - Styling
 - **WebSocket** - Real-time communication with monitor service
+- **Biome** - Fast, modern linter and formatter (replacing ESLint/Prettier)
 
 ## Default Ports
 
