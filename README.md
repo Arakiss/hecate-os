@@ -37,6 +37,7 @@ docker compose run --rm build
 - [Hardware Compatibility](docs/HARDWARE.md)
 - [Building from Source](docs/BUILDING.md)
 - [Architecture Overview](docs/ARCHITECTURE.md)
+- [Development Tools](docs/DEVELOPMENT-TOOLS.md)
 - [Security Considerations](SECURITY.md)
 - [Contributing](docs/CONTRIBUTING.md)
 - [Changelog](CHANGELOG.md)
