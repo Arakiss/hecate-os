@@ -1,7 +1,9 @@
 # HecateOS NVIDIA Support
-# Basic driver from Ubuntu repos
+# Basic driver from Ubuntu repos - Updated to latest 2026 version (590)
 # For full setup run: sudo hecate driver install
 
-nvidia-driver-570
-nvidia-utils-570
-nvidia-cuda-toolkit
+# Note: NVIDIA packages commented for Docker build compatibility
+# These will be installed post-boot via hecate-driver-installer.sh
+# nvidia-driver-590
+# nvidia-utils-590
+# nvidia-cuda-toolkit

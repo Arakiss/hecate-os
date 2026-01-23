@@ -1,6 +1,48 @@
-# HecateOS ML/AI Build Dependencies
-# C libraries needed when pip installs ML packages
+# HecateOS ML/AI Build Dependencies - Updated Jan 2026
+# Essential C libraries and dependencies for modern ML/AI frameworks
 
+# Linear algebra and numerical computing
 libopenblas-dev
 liblapack-dev
+libblas-dev
+libatlas-base-dev
+
+# Data formats and serialization
 libhdf5-dev
+libhdf5-serial-dev
+libnetcdf-dev
+
+# Image processing and computer vision
+libopencv-dev
+libjpeg-dev
+libpng-dev
+libtiff-dev
+libavcodec-dev
+libavformat-dev
+libswscale-dev
+
+# GPU and CUDA support dependencies
+ocl-icd-opencl-dev
+pocl-opencl-icd
+
+# Python development
+python3-dev
+python3-pip
+python3-venv
+python3-numpy
+python3-scipy
+python3-pandas
+
+# Build tools for compiling extensions
+cmake
+ninja-build
+ccache
+
+# Compression libraries for datasets
+liblz4-dev
+libzstd-dev
+libsnappy-dev
+
+# Protobuf for model serialization
+libprotobuf-dev
+protobuf-compiler
