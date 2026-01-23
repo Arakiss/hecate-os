@@ -1,0 +1,32 @@
+[package]
+name = "hecate-core"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+sysinfo.workspace = true
+procfs.workspace = true
+nix.workspace = true
+libc.workspace = true
+
+[dev-dependencies]
+tempfile = "3.8"
+criterion = "0.5"
+proptest = "1.4"
+rstest = "0.18"
+mockall = "0.12"
+pretty_assertions = "1.4"
+
+[lib]
+name = "hecate_core"
+path = "src/lib.rs"
+
+[[bench]]
+name = "performance"
+harness = false
