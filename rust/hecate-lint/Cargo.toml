@@ -1,0 +1,33 @@
+[package]
+name = "hecate-lint"
+version = "0.1.0"
+edition = "2021"
+authors = ["HecateOS Team"]
+license = "MIT"
+description = "HecateOS code quality and linting tool"
+
+[[bin]]
+name = "hecate-lint"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = { workspace = true }
+clap = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+# File system operations
+walkdir = "2.4"
+ignore = "0.4"
+regex = "1.10"
+
+# Terminal UI
+colored = "2.1"
+indicatif = "0.17"
+
+# TOML parsing
+toml_edit = "0.22"
