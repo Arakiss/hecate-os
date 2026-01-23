@@ -1,0 +1,144 @@
+# HecateOS Development Tools Makefile
+
+.PHONY: all build install test clean help
+
+# Configuration
+CARGO = cargo
+INSTALL_DIR = /usr/local/bin
+TOOLS = hecate-dev hecate-lint hecate-hooks hecate-changelog hecate-deps hecate-arch
+
+# Default target
+all: build
+
+# Build all development tools
+build:
+	@echo "🔨 Building HecateOS development tools..."
+	$(CARGO) build --release --workspace
+	@echo "✅ Build complete!"
+
+# Install tools to system
+install: build
+	@echo "📦 Installing development tools to $(INSTALL_DIR)..."
+	@for tool in $(TOOLS); do \
+		echo "  Installing $$tool..."; \
+		install -Dm755 target/release/$$tool $(INSTALL_DIR)/$$tool; \
+	done
+	@echo "✅ Installation complete!"
+
+# Run tests
+test:
+	@echo "🧪 Running tests..."
+	$(CARGO) test --workspace --quiet
+	@echo "✅ Tests passed!"
+
+# Quick check (faster than full build)
+check:
+	@echo "🔍 Checking code..."
+	$(CARGO) check --workspace
+	@echo "✅ Check complete!"
+
+# Format code
+fmt:
+	@echo "🎨 Formatting code..."
+	$(CARGO) fmt --all
+	@echo "✅ Formatting complete!"
+
+# Lint with clippy
+lint:
+	@echo "📋 Running clippy..."
+	$(CARGO) clippy --workspace -- -D warnings
+	@echo "✅ Linting complete!"
+
+# Clean build artifacts
+clean:
+	@echo "🧹 Cleaning..."
+	$(CARGO) clean
+	@echo "✅ Clean complete!"
+
+# Development workflow shortcuts
+dev-setup: install
+	@echo "🚀 Setting up development environment..."
+	hecate-hooks install --force
+	@echo "✅ Development environment ready!"
+
+# Version management shortcuts
+version-show:
+	hecate-dev version show
+
+version-bump-patch:
+	hecate-dev version bump patch
+
+version-bump-minor:
+	hecate-dev version bump minor
+
+version-bump-major:
+	hecate-dev version bump major
+
+version-sync:
+	hecate-dev version sync
+
+# Commit helpers
+commit-feat:
+	@read -p "Scope (optional): " scope; \
+	read -p "Message: " msg; \
+	hecate-dev commit create -t feat -s "$$scope" -m "$$msg"
+
+commit-fix:
+	@read -p "Scope (optional): " scope; \
+	read -p "Message: " msg; \
+	hecate-dev commit create -t fix -s "$$scope" -m "$$msg"
+
+# Release helpers
+release:
+	@read -p "Version (leave empty for auto): " version; \
+	hecate-dev release create --version "$$version"
+
+changelog:
+	hecate-changelog --update
+
+# Check everything
+check-all: check
+	@echo "🔍 Running comprehensive checks..."
+	@if command -v hecate-dev >/dev/null; then \
+		hecate-dev check; \
+		hecate-arch validate; \
+		hecate-deps check; \
+	else \
+		echo "⚠️  Tools not installed. Run 'make install' first."; \
+	fi
+
+# Help
+help:
+	@echo "HecateOS Development Tools Makefile"
+	@echo ""
+	@echo "Usage: make [target]"
+	@echo ""
+	@echo "Main targets:"
+	@echo "  build       - Build all development tools"
+	@echo "  install     - Install tools to $(INSTALL_DIR)"
+	@echo "  test        - Run tests"
+	@echo "  check       - Quick syntax check"
+	@echo "  clean       - Clean build artifacts"
+	@echo ""
+	@echo "Development:"
+	@echo "  dev-setup   - Setup development environment"
+	@echo "  fmt         - Format code"
+	@echo "  lint        - Run clippy linter"
+	@echo "  check-all   - Run all checks"
+	@echo ""
+	@echo "Version management:"
+	@echo "  version-show       - Show current version"
+	@echo "  version-bump-patch - Bump patch version"
+	@echo "  version-bump-minor - Bump minor version" 
+	@echo "  version-bump-major - Bump major version"
+	@echo "  version-sync       - Sync versions"
+	@echo ""
+	@echo "Commits:"
+	@echo "  commit-feat - Create feature commit"
+	@echo "  commit-fix  - Create fix commit"
+	@echo ""
+	@echo "Release:"
+	@echo "  release     - Create a new release"
+	@echo "  changelog   - Update changelog"
+	@echo ""
+	@echo "Run 'make help' to see this message again."

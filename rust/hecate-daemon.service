@@ -1,0 +1,25 @@
+[Unit]
+Description=HecateOS Hardware Optimization Daemon
+After=multi-user.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/hecated
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=hecated
+User=root
+Environment="RUST_LOG=info"
+
+# Security hardening
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/etc/hecate /proc/sys /sys
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target
