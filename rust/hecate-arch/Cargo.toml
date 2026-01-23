@@ -1,0 +1,21 @@
+[package]
+name = "hecate-arch"
+version = "0.1.0"
+edition = "2021"
+authors = ["HecateOS Team"]
+license = "MIT"
+description = "HecateOS architecture validator"
+
+[[bin]]
+name = "hecate-arch"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = { workspace = true }
+clap = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+colored = "2.1"
+walkdir = "2.4"
+petgraph = "0.6"
+toml_edit = "0.22"
