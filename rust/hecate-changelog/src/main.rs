@@ -219,11 +219,11 @@ fn markdown_to_html(markdown: &str) -> String {
         .replace("\n", "</li>")
 }
 
-fn update_changelog_file(new_content: &str, version: Option<&str>) -> Result<()> {
+fn update_changelog_file(new_content: &str, _version: Option<&str>) -> Result<()> {
     let path = "CHANGELOG.md";
     let existing = fs::read_to_string(path).unwrap_or_else(|_| "# Changelog\n\n".to_string());
     
-    let mut lines: Vec<&str> = existing.lines().collect();
+    let lines: Vec<&str> = existing.lines().collect();
     let insert_pos = lines.iter()
         .position(|l| l.starts_with("## "))
         .unwrap_or(lines.len());

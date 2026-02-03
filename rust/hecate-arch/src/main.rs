@@ -90,7 +90,7 @@ fn check_cycles() -> Result<()> {
         .filter(|e| e.file_name() == "Cargo.toml")
     {
         let content = fs::read_to_string(entry.path())?;
-        if let Ok(doc) = content.parse::<toml_edit::Document>() {
+        if let Ok(doc) = content.parse::<toml_edit::DocumentMut>() {
             if let Some(package) = doc.get("package").and_then(|p| p.get("name")) {
                 let package_name = package.as_str().unwrap_or("").to_string();
                 

@@ -1,0 +1,37 @@
+# Test environment for HecateOS Rust components
+FROM rust:1.75-bookworm
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    pkg-config \
+    libssl-dev \
+    libsqlite3-dev \
+    clang \
+    libclang-dev \
+    cmake \
+    # GPU libraries (for testing)
+    mesa-utils \
+    # System monitoring tools
+    procps \
+    sysstat \
+    # Network tools
+    iproute2 \
+    net-tools \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Rust tools
+RUN cargo install cargo-watch cargo-tarpaulin
+
+# Create workspace
+WORKDIR /workspace
+
+# Copy workspace files
+COPY Cargo.toml Cargo.lock ./
+COPY . .
+
+# Build dependencies first (for caching)
+RUN cargo build --workspace --release
+
+# Default command
+CMD ["cargo", "test", "--workspace"]

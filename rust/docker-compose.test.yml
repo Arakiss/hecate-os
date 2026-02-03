@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  # Test environment for HecateOS components
+  test-env:
+    image: rust:1.75-bookworm
+    container_name: hecate-test-env
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+      - cargo-cache:/usr/local/cargo/registry
+      - target-cache:/workspace/target
+    environment:
+      - RUST_BACKTRACE=1
+      - RUST_LOG=debug
+      - CARGO_TERM_COLOR=always
+    command: |
+      bash -c "
+        # Install system dependencies
+        apt-get update && apt-get install -y \
+          build-essential \
+          pkg-config \
+          libssl-dev \
+          libsqlite3-dev \
+          clang \
+          libclang-dev \
+          cmake \
+          && cargo build --workspace \
+        && cargo test --workspace \
+        && echo 'All tests passed!'
+      "
+    networks:
+      - hecate-test
+
+  # Database for hecate-pkg testing
+  test-db:
+    image: postgres:16-alpine
+    container_name: hecate-test-db
+    environment:
+      POSTGRES_USER: hecate
+      POSTGRES_PASSWORD: testpass
+      POSTGRES_DB: hecate_pkg
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - hecate-test
+
+  # Redis for caching/session testing
+  test-redis:
+    image: redis:7-alpine
+    container_name: hecate-test-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - hecate-test
+
+  # Mock update server for hecate-update
+  mock-update-server:
+    image: nginx:alpine
+    container_name: hecate-mock-updates
+    volumes:
+      - ./test-fixtures/updates:/usr/share/nginx/html:ro
+    ports:
+      - "8080:80"
+    networks:
+      - hecate-test
+
+  # System monitor testing
+  monitor-test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: hecate-monitor-test
+    ports:
+      - "9313:9313"  # hecate-monitor port
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    command: cargo run --package hecate-monitor --bin hecate-monitor
+    networks:
+      - hecate-test
+    depends_on:
+      - test-env
+
+networks:
+  hecate-test:
+    driver: bridge
+
+volumes:
+  cargo-cache:
+  target-cache:
+  db-data:

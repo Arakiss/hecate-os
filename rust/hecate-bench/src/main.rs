@@ -7,9 +7,8 @@ use clap::{Parser, Subcommand};
 use colored::*;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use serde::{Deserialize, Serialize};
-use std::time::{Duration, Instant};
-use sysinfo::{System, SystemExt, CpuExt, DiskExt};
-use tracing::{error, info, warn};
+use std::time::Instant;
+use sysinfo::System;
 
 // ============================================================================
 // CLI STRUCTURE
@@ -415,23 +414,17 @@ fn collect_system_info() -> Result<SystemInfo> {
     let mut system = System::new_all();
     system.refresh_all();
     
-    let hostname = system.host_name().unwrap_or_else(|| "unknown".to_string());
-    let os = system.name().unwrap_or_else(|| "unknown".to_string());
-    let kernel = system.kernel_version().unwrap_or_else(|| "unknown".to_string());
+    let hostname = System::host_name().unwrap_or_else(|| "unknown".to_string());
+    let os = System::name().unwrap_or_else(|| "unknown".to_string());
+    let kernel = System::kernel_version().unwrap_or_else(|| "unknown".to_string());
     let cpu_model = system.cpus()[0].brand().to_string();
     let cpu_cores = system.cpus().len();
     let memory_total_gb = system.total_memory() as f64 / 1024.0 / 1024.0 / 1024.0;
     
     // Detect GPUs
     let mut gpu_info = Vec::new();
-    if let Ok(manager) = hecate_gpu::GpuManager::new() {
-        if let Ok(gpus) = tokio::runtime::Handle::current()
-            .block_on(manager.detect_gpus()) {
-            for gpu in gpus {
-                gpu_info.push(gpu.name);
-            }
-        }
-    }
+    // GPU detection would require async runtime, skip for now in sync context
+    gpu_info.push("GPU detection requires async runtime".to_string());
     
     Ok(SystemInfo {
         hostname,
@@ -690,7 +683,7 @@ async fn benchmark_branch_prediction(duration: u64) -> Result<f64> {
             }
         }
         
-        mispredictions += sum.abs() as u64;
+        mispredictions += (sum as i64).abs() as u64;
     }
     
     Ok(mispredictions as f64 / duration as f64 / 1_000_000.0)
@@ -700,7 +693,7 @@ async fn benchmark_branch_prediction(duration: u64) -> Result<f64> {
 // GPU BENCHMARKS
 // ============================================================================
 
-async fn run_gpu_benchmarks(duration: u64) -> Result<GpuResults> {
+async fn run_gpu_benchmarks(_duration: u64) -> Result<GpuResults> {
     println!("\n{}", "Running GPU Benchmarks...".bright_yellow());
     
     // Note: These are placeholder implementations
@@ -715,7 +708,7 @@ async fn run_gpu_benchmarks(duration: u64) -> Result<GpuResults> {
     })
 }
 
-async fn run_gpu_test(test: GpuTest) -> Result<GpuResults> {
+async fn run_gpu_test(_test: GpuTest) -> Result<GpuResults> {
     // Placeholder implementation
     Ok(GpuResults {
         cuda_gflops: 1000.0,
@@ -1075,17 +1068,17 @@ async fn run_network_test(test: NetworkTest) -> Result<NetworkResults> {
     }
 }
 
-async fn benchmark_network_bandwidth(server: &str) -> Result<f64> {
+async fn benchmark_network_bandwidth(_server: &str) -> Result<f64> {
     // Placeholder - would need actual server implementation
     Ok(100.0) // Mbps
 }
 
-async fn benchmark_network_latency(host: &str) -> Result<f64> {
+async fn benchmark_network_latency(_host: &str) -> Result<f64> {
     // Placeholder - would use actual ping implementation
     Ok(10.0) // ms
 }
 
-async fn benchmark_packet_loss(host: &str) -> Result<f64> {
+async fn benchmark_packet_loss(_host: &str) -> Result<f64> {
     // Placeholder - would use actual packet loss test
     Ok(0.0) // %
 }
@@ -1207,7 +1200,7 @@ async fn benchmark_transformer(duration: u64) -> Result<f64> {
         // Simulate attention computation
         let q = vec![vec![1.0f32; d_model]; seq_len];
         let k = vec![vec![1.0f32; d_model]; seq_len];
-        let v = vec![vec![1.0f32; d_model]; seq_len];
+        let _v = vec![vec![1.0f32; d_model]; seq_len];
         
         // QK^T computation
         let mut scores = vec![vec![0.0f32; seq_len]; seq_len];
@@ -1448,13 +1441,13 @@ async fn compare_results(baseline_path: &str, current_path: &str) -> Result<()> 
     if let (Some(base_cpu), Some(curr_cpu)) = (&baseline.cpu_results, &current.cpu_results) {
         println!("\n{}", "CPU Performance:".bright_yellow());
         
-        let single_diff = ((curr_cpu.single_thread_score - base_cpu.single_thread_score) 
-            / base_cpu.single_thread_score * 100.0);
-        let multi_diff = ((curr_cpu.multi_thread_score - base_cpu.multi_thread_score) 
-            / base_cpu.multi_thread_score * 100.0);
+        let single_diff = (curr_cpu.single_thread_score - base_cpu.single_thread_score) 
+            / base_cpu.single_thread_score * 100.0;
+        let multi_diff = (curr_cpu.multi_thread_score - base_cpu.multi_thread_score) 
+            / base_cpu.multi_thread_score * 100.0;
         
-        let single_color = if single_diff > 0.0 { "green" } else { "red" };
-        let multi_color = if multi_diff > 0.0 { "green" } else { "red" };
+        let _single_color = if single_diff > 0.0 { "green" } else { "red" };
+        let _multi_color = if multi_diff > 0.0 { "green" } else { "red" };
         
         println!("  Single-thread: {:+.1}%", single_diff);
         println!("  Multi-thread:  {:+.1}%", multi_diff);

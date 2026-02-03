@@ -5,11 +5,38 @@ All notable changes to HecateOS will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.0] - 2026-01-24
+## [0.3.0] - 2025-02-03
 
 ### Added
 
-#### Rust System Components (NEW)
+#### Rust System Components - COMPLETED
+- **hecate-ml**: Machine Learning Workload Optimizer (NEW)
+  - Framework detection (PyTorch, TensorFlow, ONNX, Hugging Face)
+  - Automatic batch size optimization
+  - Memory usage optimization
+  - Distributed training coordination
+  - Dataset management and caching strategies
+  - Performance profiling with bottleneck analysis
+  - System-aware optimization recommendations
+  - Predefined optimization profiles for common workloads
+  - Comprehensive validation and result caching
+
+#### Infrastructure Improvements
+- Comprehensive test suite for hecate-gpu (26+ integration tests)
+- Test coverage for hecate-core and hecate-ml
+
+### Changed
+- Updated documentation to reflect actual implementation status
+- Reorganized roadmap with accurate completion dates
+
+### Fixed
+- Documentation inconsistencies with actual implementation
+
+## [0.2.0] - 2025-01-24
+
+### Added
+
+#### Rust System Components (INITIAL RELEASE)
 - **hecate-core**: Hardware detection and system profiling library
   - Automatic detection of AI/Gaming/Workstation profiles
   - Hardware enumeration and capabilities detection
@@ -21,16 +48,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Thermal, memory, and GPU health management
   - Performance optimization on boot
 
-- **hecate-gpu**: Comprehensive GPU management module
+- **hecate-gpu**: Comprehensive GPU management module (PRODUCTION READY)
   - NVIDIA GPU control via NVML wrapper
+  - AMD GPU support via DRM interface
   - Power mode profiles (MaxPerformance, Balanced, PowerSaver)
-  - Real-time GPU monitoring
+  - Real-time GPU monitoring with VRAM alerts
   - Multi-GPU support with individual control
+  - Dynamic GPU switching (integrated ↔ discrete)
+  - Driver management integration
+  - Load balancing framework
+  - Comprehensive test coverage (26+ tests)
 
-- **hecate-monitor**: Real-time monitoring server
-  - WebSocket server for streaming metrics (port 3000)
+- **hecate-monitor**: Real-time monitoring server (PRODUCTION READY)
+  - WebSocket server for streaming metrics (port 9313)
+  - Built-in HTML dashboard for web interface
   - Comprehensive system metrics collection
   - Process tracking with top CPU/memory consumers
+  - Thermal monitoring for all components
+  - Multi-client support
   - Automatic client reconnection support
 
 - **hecate-cli**: Advanced system management CLI
@@ -40,17 +75,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - System benchmark integration
   - Network diagnostics and health checks
 
-- **hecate-bench**: Comprehensive benchmark suite
-  - CPU, Memory, Disk I/O benchmarks
-  - GPU and AI/ML workload benchmarks
-  - System stress testing
+- **hecate-bench**: Comprehensive benchmark suite (PRODUCTION READY)
+  - CPU benchmarks (single/multi-thread, floating point, crypto, cache latency)
+  - GPU benchmarks (CUDA, tensor cores, ray tracing)
+  - Memory benchmarks (sequential/random, bandwidth, latency)
+  - Disk I/O benchmarks (sequential/random, IOPS)
+  - Network benchmarks (bandwidth, latency, packet loss)
+  - AI/ML benchmarks (matrix multiplication, convolution, transformers)
+  - System stress testing with configurable duration
   - Result comparison and export (CSV/JSON)
+  - Progress bars and colored output
 
-- **hecate-pkg**: Modern package manager
+- **hecate-pkg**: Modern package manager (60% COMPLETE - IN DEVELOPMENT)
   - Full dependency resolution with semver
   - Repository management with mirrors
   - Package integrity verification (SHA256, BLAKE3)
-  - Transaction-based installation/removal
+  - CLI interface with all commands implemented
+  - Progress bars and user interaction
+  - NOTE: Database operations and installation logic pending
 
 - **hecate-dashboard**: Web monitoring dashboard
   - Next.js with Shadcn UI base components

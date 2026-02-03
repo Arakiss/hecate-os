@@ -199,7 +199,7 @@ fn check_and_fix_imports(content: &str) -> Option<String> {
     }
 }
 
-fn organize_imports(imports: &[&str]) -> Vec<&str> {
+fn organize_imports<'a>(imports: &[&'a str]) -> Vec<&'a str> {
     let mut sorted = imports.to_vec();
     sorted.sort();
     sorted

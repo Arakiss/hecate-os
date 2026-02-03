@@ -12,7 +12,9 @@ members = [
     "hecate-arch",
     "hecate-bench",
     "hecate-monitor",
-    "hecate-ml",
+    "hecate-ml", 
+    "hecate-update",
+    "hecate-sign",
 ]
 resolver = "2"
 
@@ -31,7 +33,7 @@ anyhow = "1.0"
 thiserror = "1.0"
 clap = { version = "4.4", features = ["derive"] }
 tracing = "0.1"
-tracing-subscriber = "0.3"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
 # Hardware monitoring
 nvml-wrapper = "0.9"

@@ -88,7 +88,7 @@ pub fn generate_changelog(range: Option<&str>, format: &str) -> Result<()> {
 }
 
 pub fn generate_release_notes(version: Option<&str>) -> Result<()> {
-    let version = version.unwrap_or_else(|| {
+    let version = version.map(|s| s.to_string()).unwrap_or_else(|| {
         fs::read_to_string("VERSION")
             .unwrap_or_else(|_| "0.1.0".to_string())
             .trim()
@@ -176,7 +176,7 @@ fn get_last_tag() -> Result<String> {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 struct Commit {
     hash: String,
     commit_type: String,
@@ -304,8 +304,8 @@ fn format_changelog_markdown(commits: &[Commit]) -> String {
     // Other changes
     let other_types = vec!["docs", "style", "refactor", "test", "build", "ci", "chore"];
     let mut has_other = false;
-    for commit_type in other_types {
-        if grouped.contains_key(commit_type) {
+    for commit_type in &other_types {
+        if grouped.contains_key(*commit_type) {
             has_other = true;
             break;
         }
@@ -313,8 +313,8 @@ fn format_changelog_markdown(commits: &[Commit]) -> String {
     
     if has_other {
         output.push_str("### 📝 Other Changes\n\n");
-        for commit_type in other_types {
-            if let Some(commits) = grouped.get(commit_type) {
+        for commit_type in &other_types {
+            if let Some(commits) = grouped.get(*commit_type) {
                 for commit in commits {
                     output.push_str(&format!(
                         "* {}{} ({})\n",

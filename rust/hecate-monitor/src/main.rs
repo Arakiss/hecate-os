@@ -19,10 +19,10 @@ use std::{
     sync::Arc,
     time::Duration,
 };
-use sysinfo::{System, SystemExt, CpuExt, DiskExt, NetworkExt, ProcessExt};
+use sysinfo::{System, Disks, Networks, Process, Pid};
 use tokio::sync::RwLock;
 use tower_http::cors::CorsLayer;
-use tracing::{error, info, warn};
+use tracing::info;
 
 // ============================================================================
 // TIPOS DE DATOS
@@ -142,6 +142,8 @@ impl AppState {
 /// Recolecta métricas del sistema periódicamente
 async fn metrics_collector(state: AppState) {
     let mut interval = tokio::time::interval(Duration::from_secs(1));
+    let mut disks = Disks::new_with_refreshed_list();
+    let mut networks = Networks::new_with_refreshed_list();
     
     loop {
         interval.tick().await;
@@ -150,8 +152,12 @@ async fn metrics_collector(state: AppState) {
         let mut system = state.system.write().await;
         system.refresh_all();
         
+        // Actualizar disks y networks
+        disks.refresh();
+        networks.refresh();
+        
         // Recolectar métricas
-        let metrics = collect_metrics(&system).await;
+        let metrics = collect_metrics(&system, &disks, &networks).await;
         
         // Guardar métricas actuales
         {
@@ -182,7 +188,7 @@ async fn metrics_collector(state: AppState) {
 }
 
 /// Recolecta todas las métricas del sistema
-async fn collect_metrics(system: &System) -> SystemMetrics {
+async fn collect_metrics(system: &System, disks: &Disks, networks: &Networks) -> SystemMetrics {
     // CPU Metrics
     let cpu = CpuMetrics {
         usage_percent: system.global_cpu_info().cpu_usage(),
@@ -192,7 +198,7 @@ async fn collect_metrics(system: &System) -> SystemMetrics {
             .map(|cpu| cpu.frequency())
             .unwrap_or(0),
         load_avg: {
-            let load = system.load_average();
+            let load = System::load_average();
             [load.one as f32, load.five as f32, load.fifteen as f32]
         },
     };
@@ -211,7 +217,7 @@ async fn collect_metrics(system: &System) -> SystemMetrics {
     let gpu = collect_gpu_metrics().await;
     
     // Disk Metrics
-    let disks: Vec<DiskMetrics> = system.disks()
+    let disk_list: Vec<DiskMetrics> = disks
         .iter()
         .map(|disk| DiskMetrics {
             name: disk.name().to_string_lossy().to_string(),
@@ -228,9 +234,9 @@ async fn collect_metrics(system: &System) -> SystemMetrics {
     let mut total_rx = 0.0;
     let mut total_tx = 0.0;
     
-    for (name, data) in system.networks() {
-        let rx_mb_s = data.received() as f64 / 1024.0 / 1024.0;
-        let tx_mb_s = data.transmitted() as f64 / 1024.0 / 1024.0;
+    for (name, data) in networks.iter() {
+        let rx_mb_s = data.total_received() as f64 / 1024.0 / 1024.0;
+        let tx_mb_s = data.total_transmitted() as f64 / 1024.0 / 1024.0;
         
         interfaces.push(NetworkInterface {
             name: name.clone(),
@@ -269,7 +275,7 @@ async fn collect_metrics(system: &System) -> SystemMetrics {
     
     let running_count = system.processes()
         .values()
-        .filter(|p| p.status() == sysinfo::ProcessStatus::Run)
+        .filter(|p| matches!(p.status(), sysinfo::ProcessStatus::Run))
         .count();
     
     let processes = ProcessMetrics {
@@ -284,7 +290,7 @@ async fn collect_metrics(system: &System) -> SystemMetrics {
         cpu,
         memory,
         gpu,
-        disks,
+        disks: disk_list,
         network,
         processes,
     }
@@ -479,10 +485,8 @@ async fn main() {
     info!("Dashboard: http://localhost:{}", port);
     info!("WebSocket: ws://localhost:{}/ws", port);
     
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
+    axum::serve(listener, app).await.unwrap();
 }
 
 // Para uuid

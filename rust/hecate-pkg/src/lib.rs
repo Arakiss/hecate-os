@@ -9,6 +9,12 @@ use std::path::{Path, PathBuf};
 use semver::Version;
 use chrono::{DateTime, Utc};
 
+mod database;
+mod cache;
+
+use database::PackageDatabase;
+use cache::{PackageCache, DownloadManager};
+
 // ============================================================================
 // PACKAGE TYPES AND METADATA
 // ============================================================================
@@ -251,6 +257,7 @@ impl PackageManager {
     }
 
     /// Remove a package
+    #[async_recursion::async_recursion]
     pub async fn remove(&mut self, package_name: &str) -> Result<()> {
         // Check if installed
         if !self.database.is_installed(package_name).await? {
@@ -398,6 +405,7 @@ impl PackageManager {
         Ok(to_install)
     }
 
+    #[async_recursion::async_recursion]
     async fn resolve_deps_recursive(
         &self,
         package: &Package,
@@ -524,7 +532,7 @@ impl PackageManager {
         // Track installed files
         for entry in archive.entries()? {
             let mut entry = entry?;
-            let path = entry.path()?;
+            let path = entry.path()?.to_path_buf();
             let install_path = install_root.join(&path);
 
             // Create parent directories
@@ -673,116 +681,8 @@ impl PackageManager {
 // DATABASE
 // ============================================================================
 
-/// Package database for tracking installations
-struct PackageDatabase {
-    pool: sqlx::SqlitePool,
-}
+// Database implementation moved to database.rs module
 
-impl PackageDatabase {
-    async fn open(path: &Path) -> Result<Self> {
-        // Create database directory if needed
-        if let Some(parent) = path.parent() {
-            std::fs::create_dir_all(parent)?;
-        }
-
-        let database_url = format!("sqlite://{}", path.display());
-        let pool = sqlx::SqlitePool::connect(&database_url).await?;
-
-        // Run migrations
-        sqlx::migrate!("./migrations").run(&pool).await?;
-
-        Ok(Self { pool })
-    }
-
-    async fn is_installed(&self, package_name: &str) -> Result<bool> {
-        let result = sqlx::query!(
-            "SELECT COUNT(*) as count FROM installed_packages WHERE name = ?",
-            package_name
-        )
-        .fetch_one(&self.pool)
-        .await?;
-
-        Ok(result.count > 0)
-    }
-
-    async fn get_installed_package(&self, name: &str) -> Result<InstalledPackage> {
-        // TODO: Implement database query
-        unimplemented!()
-    }
-
-    async fn get_installed_packages(&self) -> Result<Vec<InstalledPackage>> {
-        // TODO: Implement database query
-        unimplemented!()
-    }
-
-    async fn get_dependents(&self, package_name: &str) -> Result<Vec<String>> {
-        // TODO: Implement database query
-        unimplemented!()
-    }
-
-    async fn mark_removed(&self, package_name: &str) -> Result<()> {
-        // TODO: Implement database update
-        unimplemented!()
-    }
-
-    async fn record_installation(&self, installed: InstalledPackage) -> Result<()> {
-        // TODO: Implement database insert
-        unimplemented!()
-    }
-
-    async fn find_orphans(&self) -> Result<Vec<String>> {
-        // TODO: Implement orphan detection
-        unimplemented!()
-    }
-
-    async fn get_repository_indices(&self) -> Result<Vec<RepositoryIndex>> {
-        // TODO: Implement repository index retrieval
-        unimplemented!()
-    }
-
-    async fn update_repository_index(&self, index: RepositoryIndex) -> Result<()> {
-        // TODO: Implement repository index update
-        unimplemented!()
-    }
-}
-
-// ============================================================================
-// CACHE
-// ============================================================================
-
-/// Package cache for downloaded packages
-struct PackageCache {
-    cache_dir: PathBuf,
-}
-
-impl PackageCache {
-    fn new(cache_dir: &Path) -> Result<Self> {
-        std::fs::create_dir_all(cache_dir)?;
-        Ok(Self {
-            cache_dir: cache_dir.to_path_buf(),
-        })
-    }
-
-    fn get_package_path(&self, package: &Package) -> PathBuf {
-        let filename = format!("{}-{}.pkg.tar.zst", package.name, package.version);
-        self.cache_dir.join(filename)
-    }
-
-    fn clean(&self) -> Result<()> {
-        // Remove old cached packages
-        for entry in std::fs::read_dir(&self.cache_dir)? {
-            let entry = entry?;
-            let path = entry.path();
-            
-            // Check age of file
-            if let Ok(metadata) = path.metadata() {
-                if let Ok(modified) = metadata.modified() {
-                    if modified.elapsed().unwrap_or_default().as_secs() > 30 * 24 * 3600 {
-                        std::fs::remove_file(&path)?;
-                    }
-                }
-            }
-        }
-        Ok(())
-    }
-}
+// Re-export types for public API
+pub use database::DatabaseStats;
+pub use cache::CacheStats;

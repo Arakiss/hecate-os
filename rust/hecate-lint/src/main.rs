@@ -1,7 +1,6 @@
 use anyhow::Result;
 use clap::Parser;
 use colored::*;
-use regex::Regex;
 use std::fs;
 use std::path::Path;
 use walkdir::WalkDir;
@@ -142,7 +141,7 @@ fn check_documentation(path: &str, issues: &mut Vec<LintIssue>) -> Result<()> {
         let doc_path = Path::new(path).join(doc);
         if !doc_path.exists() {
             issues.push(LintIssue {
-                file: doc,
+                file: doc.to_string(),
                 line: 0,
                 rule: "missing-doc".to_string(),
                 message: format!("Required documentation file missing"),
@@ -164,7 +163,7 @@ fn check_config_files(path: &str, issues: &mut Vec<LintIssue>) -> Result<()> {
         let file_path = entry.path();
         let content = fs::read_to_string(file_path)?;
         
-        if let Err(e) = content.parse::<toml_edit::Document>() {
+        if let Err(e) = content.parse::<toml_edit::DocumentMut>() {
             issues.push(LintIssue {
                 file: file_path.display().to_string(),
                 line: 0,

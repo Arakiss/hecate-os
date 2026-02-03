@@ -26,11 +26,31 @@ docker compose run --rm build
 
 ## Features
 
+### ✅ Production Ready
 - **Automatic hardware profiling** - Detects your CPU, GPU, RAM, and storage on first boot
 - **Performance optimization** - Applies hardware-specific kernel parameters, drivers, and system settings
-- **Real-time monitoring** - WebSocket-based system monitoring with web dashboard
-- **Modern tooling** - Rust-based system components for performance-critical operations
-- **Package management** - Custom package manager with dependency resolution
+- **Advanced GPU management** - Multi-vendor support (NVIDIA/AMD), VRAM monitoring, load balancing
+- **ML workload optimization** - Auto-tunes PyTorch/TensorFlow, batch sizes, and distributed training
+- **Real-time monitoring** - WebSocket-based dashboard with system metrics and thermal monitoring
+- **Comprehensive benchmarking** - CPU, GPU, memory, disk, network, and AI/ML performance testing
+- **Modern tooling** - Rust-based system components with < 50MB RAM footprint
+
+### 🚧 In Development
+- **Package management** - Native package manager with parallel downloads (60% complete)
+- **Intelligent updates** - Live kernel patching and driver hot-swapping (planned)
+
+## Rust Components Status
+
+| Component | Status | Description |
+|-----------|--------|-------------|
+| `hecate-daemon` | ✅ Production | System optimization daemon with hardware detection |
+| `hecate-gpu` | ✅ Production | Advanced GPU management with 26+ tests |
+| `hecate-ml` | ✅ Production | ML workload optimizer for PyTorch/TensorFlow |
+| `hecate-monitor` | ✅ Production | Real-time performance dashboard (port 9313) |
+| `hecate-bench` | ✅ Production | Comprehensive benchmarking suite |
+| `hecate-core` | ✅ Production | Core hardware detection library |
+| `hecate-pkg` | ⚠️ 60% Complete | Package manager (needs database implementation) |
+| `hecate-update` | ❌ Planned | Intelligent update system |
 
 ## Documentation
 
@@ -41,7 +61,7 @@ docker compose run --rm build
 - [Security Considerations](SECURITY.md)
 - [Contributing](docs/CONTRIBUTING.md)
 - [Changelog](CHANGELOG.md)
-- [Roadmap](docs/ROADMAP.md)
+- [Roadmap](docs/ROADMAP.md) - **Updated February 2025**
 
 ## License
 

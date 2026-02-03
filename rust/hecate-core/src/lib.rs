@@ -126,26 +126,16 @@ impl HardwareDetector {
         }
 
         let first_cpu = &cpus[0];
-        let cpu_info = procfs::CpuInfo::new()?;
         
-        // Parse vendor and model from /proc/cpuinfo
-        let vendor = cpu_info
-            .cpus
-            .first()
-            .and_then(|cpu| cpu.vendor_id.clone())
-            .unwrap_or_else(|| "Unknown".to_string());
-            
-        let model = cpu_info
-            .cpus
-            .first()
-            .and_then(|cpu| cpu.model_name.clone())
-            .unwrap_or_else(|| first_cpu.brand().to_string());
+        // Use sysinfo for CPU info instead of procfs
+        let vendor = first_cpu.vendor_id().to_string();
+        let model = first_cpu.brand().to_string();
 
         // Detect generation (Intel example)
-        let generation = if vendor.to_lowercase().contains("intel") {
+        let generation: Option<u32> = if vendor.to_lowercase().contains("intel") {
             model.split('-')
                 .nth(1)
-                .and_then(|s| s.chars().take(2).collect::<String>().parse().ok())
+                .and_then(|s| s.chars().take(2).collect::<String>().parse::<u32>().ok())
         } else {
             None
         };
@@ -284,7 +274,7 @@ impl HardwareDetector {
         })
     }
 
-    fn determine_profile(cpu: &CpuInfo, memory: &MemoryInfo, gpus: &[GpuInfo]) -> SystemProfile {
+    fn determine_profile(_cpu: &CpuInfo, memory: &MemoryInfo, gpus: &[GpuInfo]) -> SystemProfile {
         // Check for flagship AI system
         if memory.total_gb >= 64.0 {
             if let Some(gpu) = gpus.first() {

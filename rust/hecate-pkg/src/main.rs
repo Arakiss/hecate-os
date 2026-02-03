@@ -7,7 +7,7 @@ use clap::{Parser, Subcommand};
 use colored::*;
 use dialoguer::{Confirm, MultiSelect, Select};
 use indicatif::{ProgressBar, ProgressStyle, MultiProgress};
-use hecate_pkg::{PackageManager, PackageConfig};
+use hecate_pkg::{PackageManager, PackageConfig, Package};
 use std::path::PathBuf;
 use tracing::{error, info, warn};
 
@@ -346,7 +346,7 @@ async fn handle_install(
     println!("{}", "Resolving dependencies...".bright_cyan());
     
     // TODO: Get install plan from package manager
-    let install_plan = vec![]; // Placeholder
+    let install_plan: Vec<Package> = vec![]; // Placeholder
     
     if install_plan.is_empty() {
         println!("{}", "All requested packages are already installed".green());
@@ -425,7 +425,7 @@ async fn handle_remove(
     }
     
     // TODO: Check what will be removed
-    let remove_plan = vec![]; // Placeholder
+    let remove_plan: Vec<String> = vec![]; // Placeholder
     
     // Show removal plan
     println!("\n{}", "Packages to be removed:".bright_yellow());
@@ -557,14 +557,14 @@ async fn handle_list(
     println!("{}", "Installed packages:".bright_cyan());
     
     // TODO: Get package list from manager
-    let packages = vec![];
+    let packages: Vec<Package> = vec![];
     
     if packages.is_empty() {
         println!("{}", "No packages installed".yellow());
         return Ok(());
     }
     
-    for pkg in packages {
+    for pkg in &packages {
         // println!("  {} {}", pkg.name, pkg.version);
     }
     
@@ -736,7 +736,7 @@ async fn handle_fix(
     println!("{}", "Checking for broken packages...".bright_cyan());
     
     // TODO: Check for issues
-    let issues = vec![];
+    let issues: Vec<String> = vec![];
     
     if issues.is_empty() {
         println!("{}", "No issues found!".green());

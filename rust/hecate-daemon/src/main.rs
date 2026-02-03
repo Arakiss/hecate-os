@@ -8,7 +8,7 @@ use hecate_core::{HardwareDetector, HardwareInfo, SystemProfile, apply_optimizat
 use std::fs;
 use std::path::Path;
 use std::process::Command;
-use tracing::{error, info, warn};
+use tracing::{info, warn};
 
 const CONFIG_PATH: &str = "/etc/hecate/hardware.json";
 const FIRST_BOOT_FLAG: &str = "/etc/hecate/.first_boot_complete";
