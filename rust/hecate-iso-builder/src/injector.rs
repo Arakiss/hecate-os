@@ -181,21 +181,50 @@ impl ComponentInjector {
     }
     
     fn find_rust_dir(&self) -> Result<PathBuf> {
-        // Try to find the Rust directory
-        let possible_paths = [
-            PathBuf::from("../rust"),
-            PathBuf::from("../../rust"),
-            PathBuf::from("./rust"),
-            dirs::home_dir().unwrap_or_default().join("hecateos/rust"),
-        ];
+        // First check if we're already in the rust directory
+        let current = std::env::current_dir()?;
+        if current.join("Makefile").exists() && current.join("hecate-daemon").is_dir() {
+            return Ok(current);
+        }
         
-        for path in possible_paths.iter() {
-            if path.join("Cargo.toml").exists() {
-                return Ok(path.canonicalize()?);
+        // Check if HECATE_ROOT env var is set
+        if let Ok(root) = std::env::var("HECATE_ROOT") {
+            let root_path = PathBuf::from(root);
+            if root_path.join("Makefile").exists() && root_path.join("hecate-daemon").is_dir() {
+                return Ok(root_path);
             }
         }
         
-        Err(anyhow::anyhow!("Could not find Rust project directory"))
+        // Try to find based on the executable location
+        if let Ok(exe_path) = std::env::current_exe() {
+            // Check if we're in target/release or target/debug
+            if let Some(parent) = exe_path.parent() {
+                if let Some(target) = parent.parent() {
+                    if let Some(rust_dir) = target.parent() {
+                        if rust_dir.join("Makefile").exists() && rust_dir.join("hecate-daemon").is_dir() {
+                            return Ok(rust_dir.to_path_buf());
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Try searching upward from current directory
+        let mut search_dir = current.clone();
+        for _ in 0..5 {
+            if search_dir.join("rust/Makefile").exists() && search_dir.join("rust/hecate-daemon").is_dir() {
+                return Ok(search_dir.join("rust"));
+            }
+            if let Some(parent) = search_dir.parent() {
+                search_dir = parent.to_path_buf();
+            } else {
+                break;
+            }
+        }
+        
+        Err(anyhow::anyhow!(
+            "Could not find HecateOS project root. Set HECATE_ROOT environment variable to /path/to/hecate-os/rust"
+        ))
     }
     
     fn generate_sysctl_config(&self) -> String {

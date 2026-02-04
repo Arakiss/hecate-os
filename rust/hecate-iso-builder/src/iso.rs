@@ -5,6 +5,7 @@ use indicatif::ProgressBar;
 use std::path::Path;
 use std::process::Command;
 use tokio::fs;
+use colored::Colorize;
 
 pub struct IsoManager;
 
@@ -23,7 +24,26 @@ impl IsoManager {
         // Create output directory
         fs::create_dir_all(output_dir).await?;
         
-        progress.set_message("Mounting ISO...");
+        progress.set_message("Extracting ISO with native Rust implementation...");
+        
+        // Try native extraction first
+        use crate::iso_extractor;
+        
+        match iso_extractor::extract_iso(iso_path, output_dir) {
+            Ok(_) => {
+                progress.set_message("✅ ISO extracted successfully with native Rust!");
+                progress.inc(100);
+                return Ok(());
+            }
+            Err(e) => {
+                // Native extraction failed, try external tools
+                progress.set_message("Native extraction failed, trying external tools...");
+                eprintln!("Native extraction error: {}", e);
+            }
+        }
+        
+        // Fallback to external tools
+        progress.set_message("Trying external extraction tools...");
         
         // Create mount point
         let mount_dir = output_dir.parent()
@@ -31,47 +51,43 @@ impl IsoManager {
             .join("iso_mount");
         fs::create_dir_all(&mount_dir).await?;
         
-        // Mount ISO (requires sudo in real usage)
-        let mount_output = Command::new("sh")
-            .arg("-c")
-            .arg(format!(
-                "7z x -o{} {} 2>/dev/null || bsdtar -xf {} -C {} 2>/dev/null || (mkdir -p {} && cp -r {}/* {} 2>/dev/null)",
-                output_dir.display(),
-                iso_path.display(),
-                iso_path.display(),
-                output_dir.display(),
-                mount_dir.display(),
-                iso_path.display(),
-                output_dir.display()
-            ))
-            .output()
-            .context("Failed to extract ISO")?;
+        // Try extraction methods that don't require sudo
+        // First try 7z
+        let result = Command::new("7z")
+            .arg("x")
+            .arg(format!("-o{}", output_dir.display()))
+            .arg("-y")
+            .arg(iso_path)
+            .output();
         
-        if !mount_output.status.success() {
-            // Try alternative extraction method
-            progress.set_message("Trying alternative extraction...");
+        let success = if let Ok(output) = result {
+            output.status.success()
+        } else {
+            false
+        };
+        
+        if !success {
+            // All automatic extraction methods failed
+            eprintln!("\n╔════════════════════════════════════════════════════════════╗");
+            eprintln!("║         ISO Extraction Tool Required                      ║");
+            eprintln!("╚════════════════════════════════════════════════════════════╝");
+            eprintln!("");
+            eprintln!("📝 Note: While HecateOS can CREATE ISOs natively in Rust,");
+            eprintln!("   extracting existing ISOs (like Ubuntu) still requires a tool.");
+            eprintln!("");
+            eprintln!("🔧 Quick fix: Install 7z (recommended):");
+            eprintln!("   {}", "sudo apt-get install p7zip-full".bright_yellow());
+            eprintln!("");
+            eprintln!("📚 Why? Extracting ISOs requires reading complex filesystem");
+            eprintln!("   structures. Native extraction is coming in a future update!");
+            eprintln!("");
+            eprintln!("Alternative manual extraction:");
+            eprintln!("  sudo mkdir -p {}", mount_dir.display());
+            eprintln!("  sudo mount -o loop {} {}", iso_path.display(), mount_dir.display());
+            eprintln!("  cp -r {}/* {}", mount_dir.display(), output_dir.display());
+            eprintln!("  sudo umount {}", mount_dir.display());
             
-            // Use xorriso if available
-            let xorriso = Command::new("xorriso")
-                .arg("-osirrox")
-                .arg("on")
-                .arg("-indev")
-                .arg(iso_path)
-                .arg("-extract")
-                .arg("/")
-                .arg(output_dir)
-                .output();
-            
-            if xorriso.is_err() {
-                // Last resort: inform user about manual extraction
-                eprintln!("\nAutomatic extraction failed. Manual steps:");
-                eprintln!("  sudo mkdir -p {}", mount_dir.display());
-                eprintln!("  sudo mount -o loop {} {}", iso_path.display(), mount_dir.display());
-                eprintln!("  cp -r {}/* {}", mount_dir.display(), output_dir.display());
-                eprintln!("  sudo umount {}", mount_dir.display());
-                
-                return Err(anyhow::anyhow!("ISO extraction failed. See manual steps above."));
-            }
+            return Err(anyhow::anyhow!("ISO extraction requires 7z. Install with: sudo apt-get install p7zip-full"));
         }
         
         progress.set_message("Copying hidden files...");
@@ -100,9 +116,33 @@ impl IsoManager {
         volume_id: &str,
         progress: &ProgressBar,
     ) -> Result<()> {
-        progress.set_message("Creating ISO structure...");
+        progress.set_message("Creating ISO with native Rust implementation...");
         
-        // Check for required tools
+        // Try native implementation first
+        use crate::iso_native::NativeIsoBuilder;
+        
+        let mut builder = NativeIsoBuilder::new(volume_id.to_string());
+        match builder.add_directory_tree(source_dir, "/") {
+            Ok(_) => {
+                match builder.build(output_iso) {
+                    Ok(_) => {
+                        progress.set_message("✅ ISO created successfully with native Rust!");
+                        progress.inc(100);
+                        return Ok(());
+                    }
+                    Err(_e) => {
+                        // Native failed, try external tools
+                        progress.set_message("Trying external tools as fallback...");
+                    }
+                }
+            }
+            Err(_e) => {
+                // Native failed, try external tools
+                progress.set_message("Trying external tools as fallback...");
+            }
+        }
+        
+        // Fallback: Check for external tools
         let tools = ["xorriso", "genisoimage", "mkisofs"];
         let mut iso_tool = None;
         
@@ -113,9 +153,38 @@ impl IsoManager {
             }
         }
         
-        let tool = iso_tool.ok_or_else(|| {
-            anyhow::anyhow!("No ISO creation tool found. Install xorriso or genisoimage")
-        })?;
+        // If no ISO tool found, create tar.gz as fallback
+        let tool = if let Some(t) = iso_tool {
+            t
+        } else {
+            eprintln!("\n⚠️  No ISO creation tool found!");
+            eprintln!("Creating a tar.gz archive instead of ISO...\n");
+            
+            // Create tar.gz as fallback
+            let tar_name = output_iso.with_extension("tar.gz");
+            progress.set_message("Creating tar.gz archive...");
+            
+            let output = Command::new("tar")
+                .arg("czf")
+                .arg(&tar_name)
+                .arg("-C")
+                .arg(source_dir.parent().unwrap_or(Path::new(".")))
+                .arg(source_dir.file_name().unwrap_or(std::ffi::OsStr::new(".")))
+                .output()?;
+                
+            if !output.status.success() {
+                return Err(anyhow::anyhow!("Failed to create tar.gz archive"));
+            }
+            
+            progress.inc(100);
+            
+            eprintln!("\n✅ Created archive: {}", tar_name.display());
+            eprintln!("\nTo create a proper ISO, install one of:");
+            eprintln!("  • sudo apt-get install xorriso");
+            eprintln!("  • sudo apt-get install genisoimage");
+            
+            return Ok(());
+        };
         
         progress.set_message("Building ISO...");
         

@@ -7,18 +7,21 @@ use clap::{Parser, Subcommand};
 use colored::*;
 use indicatif::{ProgressBar, ProgressStyle};
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::process::Command;
 use tempfile::TempDir;
-use walkdir::WalkDir;
 
 mod iso;
+mod iso_native;
+mod iso_extractor;
 mod config;
 mod injector;
+mod downloader;
 
 use config::HecateConfig;
 use iso::IsoManager;
 use injector::ComponentInjector;
+use downloader::IsoDownloader;
 
 #[derive(Parser)]
 #[command(name = "hecate-iso")]
@@ -32,6 +35,9 @@ struct Cli {
 enum Commands {
     /// Build a customized HecateOS ISO
     Build {
+        /// Download Ubuntu ISO automatically (24.04 or 22.04)
+        #[arg(short = 'd', long)]
+        download: Option<String>,
         /// Input Ubuntu ISO file
         #[arg(short, long)]
         input: PathBuf,
@@ -44,13 +50,17 @@ enum Commands {
         #[arg(short, long)]
         config: Option<PathBuf>,
         
-        /// Include compiled Rust binaries
+        /// Include compiled Rust binaries (builds them if needed)
         #[arg(long)]
         with_binaries: bool,
         
         /// Include source code
         #[arg(long)]
         with_source: bool,
+        
+        /// Skip building components (use existing binaries)
+        #[arg(long)]
+        skip_build: bool,
     },
     
     /// Extract an ISO for manual customization
@@ -101,8 +111,8 @@ async fn main() -> Result<()> {
     let cli = Cli::parse();
     
     match cli.command {
-        Commands::Build { input, output, config, with_binaries, with_source } => {
-            build_iso(input, output, config, with_binaries, with_source).await?;
+        Commands::Build { download, input, output, config, with_binaries, with_source, skip_build } => {
+            build_iso(download, input, output, config, with_binaries, with_source, skip_build).await?;
         }
         Commands::Extract { iso, output } => {
             extract_iso(iso, output).await?;
@@ -121,15 +131,123 @@ async fn main() -> Result<()> {
     Ok(())
 }
 
+fn find_rust_project_root() -> Result<PathBuf> {
+    // First check if we're already in the rust directory
+    let current = std::env::current_dir()?;
+    if current.join("Makefile").exists() && current.join("hecate-daemon").is_dir() {
+        return Ok(current);
+    }
+    
+    // Check if HECATE_ROOT env var is set
+    if let Ok(root) = std::env::var("HECATE_ROOT") {
+        let root_path = PathBuf::from(root);
+        if root_path.join("Makefile").exists() && root_path.join("hecate-daemon").is_dir() {
+            return Ok(root_path);
+        }
+    }
+    
+    // Try to find based on the executable location
+    if let Ok(exe_path) = std::env::current_exe() {
+        // Check if we're in target/release or target/debug
+        if let Some(parent) = exe_path.parent() {
+            if let Some(target) = parent.parent() {
+                if let Some(rust_dir) = target.parent() {
+                    if rust_dir.join("Makefile").exists() && rust_dir.join("hecate-daemon").is_dir() {
+                        return Ok(rust_dir.to_path_buf());
+                    }
+                }
+            }
+        }
+    }
+    
+    // Try searching upward from current directory
+    let mut search_dir = current.clone();
+    for _ in 0..5 {
+        if search_dir.join("rust/Makefile").exists() && search_dir.join("rust/hecate-daemon").is_dir() {
+            return Ok(search_dir.join("rust"));
+        }
+        if let Some(parent) = search_dir.parent() {
+            search_dir = parent.to_path_buf();
+        } else {
+            break;
+        }
+    }
+    
+    Err(anyhow::anyhow!(
+        "Could not find HecateOS project root. Set HECATE_ROOT environment variable to /path/to/hecate-os/rust"
+    ))
+}
+
+fn build_all_components() -> Result<()> {
+    println!("🔨 Building all HecateOS components...");
+    
+    // Find the rust directory by looking for Makefile
+    let rust_dir = find_rust_project_root()?;
+    
+    // List of components to build
+    let components = vec![
+        "hecate-daemon",
+        "hecate-monitor", 
+        "hecate-bench",
+        "hecate-pkg",
+        "hecate-gpu",
+        "hecate-ml",
+        "hecate-dev",
+        "hecate-sign",
+    ];
+    
+    let total = components.len();
+    for (idx, component) in components.iter().enumerate() {
+        println!("  [{}/{}] Building {}...", idx + 1, total, component);
+        
+        let component_dir = rust_dir.join(component);
+        if !component_dir.exists() {
+            eprintln!("    ⚠️  Component directory not found: {}", component);
+            continue;
+        }
+        
+        // Special handling for hecate-pkg which needs DATABASE_URL
+        let mut cmd = Command::new("cargo");
+        cmd.current_dir(&component_dir)
+            .arg("build")
+            .arg("--release");
+            
+        if *component == "hecate-pkg" {
+            cmd.env("DATABASE_URL", "sqlite:hecate-pkg.db");
+        }
+        
+        let output = cmd.output()
+            .context(format!("Failed to build {}", component))?;
+        
+        if !output.status.success() {
+            eprintln!("    ❌ Build failed for {}", component);
+            eprintln!("    Error: {}", String::from_utf8_lossy(&output.stderr));
+            // Continue with other components instead of failing
+        } else {
+            println!("    ✅ {} built successfully", component);
+        }
+    }
+    
+    println!("✅ Component build complete");
+    Ok(())
+}
+
 async fn build_iso(
+    download: Option<String>,
     input: PathBuf, 
     output: PathBuf, 
     config_path: Option<PathBuf>,
     with_binaries: bool,
     with_source: bool,
+    skip_build: bool,
 ) -> Result<()> {
     println!("{}", "HecateOS ISO Builder".bright_cyan().bold());
     println!("{}", "=".repeat(40).bright_cyan());
+    
+    // Build components first if needed
+    if with_binaries && !skip_build {
+        build_all_components()?;
+    }
     
     // Load configuration
     let config = if let Some(path) = config_path {
@@ -138,13 +256,25 @@ async fn build_iso(
         HecateConfig::default()
     };
     
-    // Verify input ISO exists
-    if !input.exists() {
-        eprintln!("{} Input ISO not found: {}", "Error:".red(), input.display());
-        eprintln!("\nDownload Ubuntu 24.04 from:");
-        eprintln!("  https://releases.ubuntu.com/24.04/");
-        return Err(anyhow::anyhow!("Input ISO not found"));
-    }
+    // Handle ISO download or use existing
+    let iso_path = if let Some(ref version) = download {
+        let download_path = PathBuf::from(format!("ubuntu-{}.iso", version));
+        if !download_path.exists() {
+            IsoDownloader::download_ubuntu(&version, &download_path).await?;
+        } else {
+            println!("ℹ️  Using cached ISO: {}", download_path.display());
+        }
+        download_path
+    } else {
+        // Verify input ISO exists
+        if !input.exists() {
+            eprintln!("{} Input ISO not found: {}", "Error:".red(), input.display());
+            eprintln!("\nTry using --download option:");
+            eprintln!("  hecate-iso build --download 24.04 -o hecateos.iso");
+            return Err(anyhow::anyhow!("Input ISO not found"));
+        }
+        input
+    };
     
     // Create temporary working directory
     let temp_dir = TempDir::new().context("Failed to create temp directory")?;
@@ -156,7 +286,7 @@ async fn build_iso(
     // Extract ISO
     let iso_manager = IsoManager::new();
     let extract_dir = work_dir.join("iso");
-    iso_manager.extract(&input, &extract_dir, &pb).await?;
+    iso_manager.extract(&iso_path, &extract_dir, &pb).await?;
     
     pb.finish_with_message("ISO extracted");
     
@@ -202,6 +332,12 @@ async fn build_iso(
     println!("  1. Test in VM: qemu-system-x86_64 -m 4G -cdrom {}", output.display());
     println!("  2. Or use VirtualBox/VMware");
     println!("  3. Or write to USB: sudo dd if={} of=/dev/sdX bs=4M", output.display());
+    
+    // Cleanup downloaded ISO if requested
+    if download.is_some() && iso_path.exists() {
+        println!("\n🧹 Cleaning up downloaded ISO...");
+        IsoDownloader::cleanup(&iso_path)?;
+    }
     
     Ok(())
 }
