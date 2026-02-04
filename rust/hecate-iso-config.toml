@@ -1,0 +1,114 @@
+[metadata]
+name = "HecateOS"
+version = "0.1.0"
+base_distro = "Ubuntu 24.04 LTS"
+architecture = "amd64"
+
+[components]
+include_binaries = [
+    "hecated",
+    "hecate-monitor",
+    "hecate-bench",
+    "hecate-pkg",
+    "hecate-dev",
+    "hecate-sign",
+]
+include_source = false
+include_docs = true
+additional_packages = [
+    "build-essential",
+    "cpufrequtils",
+    "tuned",
+    "irqbalance",
+    "nvme-cli",
+]
+
+[optimizations]
+kernel_params = [
+    "mitigations=off",
+    "intel_pstate=enable",
+    "transparent_hugepage=always",
+    "processor.max_cstate=1",
+]
+sysctl_settings = [
+    [
+    "vm.swappiness",
+    "10",
+],
+    [
+    "vm.vfs_cache_pressure",
+    "50",
+],
+    [
+    "vm.dirty_background_ratio",
+    "5",
+],
+    [
+    "vm.dirty_ratio",
+    "10",
+],
+    [
+    "net.core.default_qdisc",
+    "fq_codel",
+],
+    [
+    "net.ipv4.tcp_congestion",
+    "bbr",
+],
+    [
+    "kernel.sched_autogroup_enabled",
+    "1",
+],
+]
+cpu_governor = "performance"
+io_scheduler = "bfq"
+transparent_hugepages = "always"
+
+[branding]
+distro_name = "HecateOS"
+distro_version = "0.1.0 Performance Beast"
+motd = """
+
+ ██╗  ██╗███████╗ ██████╗ █████╗ ████████╗███████╗ ██████╗ ███████╗
+ ██║  ██║██╔════╝██╔════╝██╔══██╗╚══██╔══╝██╔════╝██╔═══██╗██╔════╝
+ ███████║█████╗  ██║     ███████║   ██║   █████╗  ██║   ██║███████╗
+ ██╔══██║██╔══╝  ██║     ██╔══██║   ██║   ██╔══╝  ██║   ██║╚════██║
+ ██║  ██║███████╗╚██████╗██║  ██║   ██║   ███████╗╚██████╔╝███████║
+ ╚═╝  ╚═╝╚══════╝ ╚═════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝ ╚═════╝ ╚══════╝
+                                                         
+ Performance-Optimized Linux Distribution
+ Monitor Dashboard: http://localhost:9313
+"""
+
+[scripts]
+post_install = """
+#!/bin/bash
+# HecateOS Post-Installation Script
+
+echo "Running HecateOS post-installation tasks..."
+
+# Enable services
+systemctl enable hecated
+systemctl enable hecate-monitor
+
+# Start services
+systemctl start hecated
+systemctl start hecate-monitor
+
+echo "Post-installation complete!""""
+first_boot = """
+#!/bin/bash
+# HecateOS First Boot Script
+
+echo "Welcome to HecateOS!"
+echo "Running first boot configuration..."
+
+# Run benchmarks
+if command -v hecate-bench >/dev/null 2>&1; then
+    hecate-bench sysinfo
+fi
+
+# Show dashboard URL
+echo ""
+echo "Monitor Dashboard available at: http://localhost:9313"
+echo """""
