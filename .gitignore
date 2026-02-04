@@ -66,3 +66,8 @@ secrets/
 .claude/
 PROMPT.md
 IMPLEMENTATION_PLAN.md
+# Build artifacts
+hecate-standalone/
+test-iso-content/
+*.iso
+ubuntu-*.iso
