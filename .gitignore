@@ -71,3 +71,4 @@ hecate-standalone/
 test-iso-content/
 *.iso
 ubuntu-*.iso
+.env
