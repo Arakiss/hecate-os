@@ -16,6 +16,7 @@ members = [
     "hecate-update",
     "hecate-sign",
     "hecate-iso-builder",
+    "hecate-cli",
 ]
 resolver = "2"
 
